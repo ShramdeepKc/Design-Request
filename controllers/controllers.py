@@ -1,22 +1,16 @@
 # -*- coding: utf-8 -*-
-# from odoo import http
+from odoo import http
+from odoo.addons.portal.controllers.portal import CustomerPortal as CustomerPortal
+from odoo.http import request, route
 
+class CustomerPortalHome(CustomerPortal):
+    @route(['/my', '/my/home'], type='http', auth="user", website=True)
+    def home(self, **kw):
+        values = self._prepare_portal_layout_values()
+        return request.render("design_request.design_home", values)
 
-# class DesignRequest(http.Controller):
-#     @http.route('/design_request/design_request', auth='public')
-#     def index(self, **kw):
-#         return "Hello, world"
-
-#     @http.route('/design_request/design_request/objects', auth='public')
-#     def list(self, **kw):
-#         return http.request.render('design_request.listing', {
-#             'root': '/design_request/design_request',
-#             'objects': http.request.env['design_request.design_request'].search([]),
-#         })
-
-#     @http.route('/design_request/design_request/objects/<model("design_request.design_request"):obj>', auth='public')
-#     def object(self, obj, **kw):
-#         return http.request.render('design_request.object', {
-#             'object': obj
-#         })
+    @route(['/my/designs'], type='http', auth="user", website=True)
+    def lists(self, **kw):
+        values = self._prepare_portal_layout_values()
+        return request.render("design_request.design_lists", values)
 
