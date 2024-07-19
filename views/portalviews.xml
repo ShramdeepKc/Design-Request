@@ -1,44 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="design_home" name="Design Home">
-        <t t-call="portal.portal_layout">
-            <t t-set="my_details" t-value="False"/>
-            <div class="wrapper col-12 d-flex flex-wrap justify-content-between align-items-center">
-                <h3 class="my-3">Nova Design Dashboard</h3>
-                <button class="btn py-0 d-flex align-items-center gap-2 d-lg-none ms-auto"
-                        data-bs-toggle="offcanvas"
-                        data-bs-target="#accountOffCanvas">
-                </button>
+    <template id="portal_my_home" inherit_id="portal.portal_my_home">
+        <xpath expr="//div[contains(@class, 'o_portal_my_home')]" position="inside">
+            <div t-call="portal.portal_docs_entry" class="pt-4">
+                <t t-set="icon">/portal/static/src/img/portal-addresses.svg</t>
+                <t t-set="title">Design Requests</t>
+                <t t-set="text">Add, remove or view your designs</t>
+                <t t-set="url">/my/designs</t>
+                <t t-set="config_card">True</t>
             </div>
-            <div class="row justify-content-between">
-                <div t-attf-class="o_portal_content col-12 col-lg-8 mb-5">
-                    <div class="o_portal_my_home">
-                        <div class="oe_structure" id="oe_structure_portal_my_home_1"/>
-                        <div class="o_portal_docs row g-2">
-                            <div class="o_portal_doc_spinner spinner-border text-o-color-2 align-self-center mt-5"/>
-                            <p class="o_portal_no_doc_message d-none">No Documents to display</p>
-                            <div class="o_portal_category row g-2 mt-3" id="portal_common_category">
-                                <t t-call="portal.portal_docs_entry">
-                                    <t t-set="icon" t-value="'/portal/static/src/img/portal-addresses.svg'"/>
-                                    <t t-set="title">Design Requests</t>
-                                    <t t-set="text">Add, remove or view your design</t>
-                                    <t t-set="url" t-value="'/my/designs'"/>
-                                    <t t-set="config_card" t-value="True"/>
-                                </t>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </t>
+        </xpath>
     </template>
     <template id="design_lists" name="Design Lists">
         <t t-call="portal.portal_layout">
             <t t-set="my_details" t-value="False"/>
             <div class="wrapper col-12 d-flex flex-wrap justify-content-between align-items-center">
                 <h3 class="my-3">Nova Design Lists</h3>
-               <a href="/my/create-design" class="btn btn-primary py-2 d-flex align-items-center gap-2 ms-auto">
+                <a href="/my/create-design" class="btn btn-primary py-2 d-flex align-items-center gap-2 ms-auto">
                     New
                 </a>
             </div>
@@ -57,5 +35,13 @@
                 </div>
             </div>
         </t>
+    </template>
+
+    <template id="portal_breadcrumbs" inherit_id="portal.portal_breadcrumbs">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'design_lists' " class="breadcrumb-item">
+                <a href="/my/designs">Design</a>
+            </li>
+        </xpath>
     </template>
 </odoo>
