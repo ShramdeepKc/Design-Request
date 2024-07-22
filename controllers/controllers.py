@@ -4,6 +4,7 @@ from odoo.addons.portal.controllers.portal import CustomerPortal as CustomerPort
 from odoo.http import request, route
 import base64
 
+
 class CustomerPortalHome(CustomerPortal):
     @http.route(['/my/designs'], type='http', auth="user", website=True)
     def lists(self, **kw):
@@ -18,7 +19,7 @@ class CustomerPortalHome(CustomerPortal):
 
     @http.route('/my/create-design/submit', type='http', auth="user", methods=['POST'], website=True, csrf=True)
     def submit_design(self, **kw):
-        
+
         # Extract form data
         design_name = kw.get('design_name')
         customer_email = kw.get('customer_email')
@@ -27,16 +28,16 @@ class CustomerPortalHome(CustomerPortal):
         if design_name and design_image:
             # Handle file upload
             # design_image_data = design_image.read()
-            
+
             # Create a new design request record
             request.env['design_request.design_request'].sudo().create({
                 'design_name': design_name,
                 'customer_email': customer_email,
                 'design_image': base64.b64encode(design_image.read()),
             })
-            
+
             # Optionally, you can add further processing or validation here
-            
+
             # Redirect to a success page or return a response
             return request.redirect('/my/designs')
         else:
@@ -45,4 +46,13 @@ class CustomerPortalHome(CustomerPortal):
         # You can customize this behavior based on your requirements
         return request.redirect('/my/create-design')
 
+    @http.route('/my/designs/<model("design_request.design_request"):design>/', type='http', auth='user', website=True)
+    def design_details(self, design, **kw):
+        # Check if the design exists
+        if not design.exists():
+            return request.not_found()  # Return 404 if design does not exist
 
+        # Pass the specific design request to the template
+        return request.render('design_request.design_details_template', {
+            'design': design
+        })
