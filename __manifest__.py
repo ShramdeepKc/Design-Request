@@ -18,7 +18,7 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'web', 'portal'],
+    'depends': ['base', 'website', 'portal'],
 
     # always loaded
     'data': [
@@ -26,6 +26,7 @@ Long description of module's purpose
         'views/views.xml',
         'views/templates.xml',
         'views/portalviews.xml',
+        'views/portal_templates.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
