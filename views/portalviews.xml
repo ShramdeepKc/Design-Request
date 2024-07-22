@@ -11,6 +11,7 @@
             </div>
         </xpath>
     </template>
+    
     <template id="portal_breadcrumbs" inherit_id="portal.portal_breadcrumbs">
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
             <li t-if="page_name == 'design_lists' " class="breadcrumb-item">
@@ -21,6 +22,7 @@
             </li>
         </xpath>
     </template>
+
     <template id="design_lists" name="Design Lists">
         <t t-call="portal.portal_layout">
             <t t-set="my_details" t-value="False"/>
@@ -58,46 +60,70 @@
             </div>
         </t>
     </template>
-<template id="design_details_template">
-    <t t-call="portal.portal_layout">
-        <div class="container mt-5">
-            <div class="row">
-                <div class="col-md-8 offset-md-2">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-primary text-white">
-                            <h2 class="mb-0">Design Request Details</h2>
-                        </div>
-                        <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <p><strong>Name:</strong> <t t-esc="design.design_name"/></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Customer Email:</strong> <t t-esc="design.customer_email"/></p>
-                                </div>
+
+    <template id="design_details_template">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-md-8 offset-md-2">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h2 class="mb-0">Design Request Details</h2>
                             </div>
-                            <div class="mb-4">
-                                <p><strong>Design Image:</strong></p>
-                                <t t-if="design.design_image">
-                                    <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')"
-                                         alt="Design Image"
-                                         class="img-fluid rounded border"
-                                         style="max-width: 100%; height: auto;"/>
-                                </t>
-                                <t t-else="">
-                                    <p class="text-muted">No Image</p>
-                                </t>
-                            </div>
-                            <div class="text-center">
-                                <a href="/my/designs" class="btn btn-primary">Back to List</a>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <p><strong>Name:</strong> <t t-esc="design.design_name"/></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Customer Email:</strong> <t t-esc="design.customer_email"/></p>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <p><strong>Design Image:</strong></p>
+                                    <t t-if="design.design_image">
+                                        <!-- Image preview with modal -->
+                                        <div class="image-preview" style="width: 100px; cursor: pointer;">
+                                            <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')"
+                                                alt="Design Image"
+                                                class="img-fluid rounded border design-image"
+                                                style="width: 100%; height: auto;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#designImageModal"/>
+                                        </div>
+                                        <!-- Modal for displaying full image -->
+                                        <div class="modal fade" id="designImageModal" tabindex="-1" aria-labelledby="designImageModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-fullscreen">
+                                                <div class="modal-content border-0">
+                                                    <div class="modal-header border-0">
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body p-0 text-center">
+                                                        <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')"
+                                                            alt="Design Image"
+                                                            class="img-fluid rounded"
+                                                            style="width: 100%; height: 90vh; object-fit: contain;" 
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <p class="text-muted">No Image</p>
+                                    </t>
+                                </div>
+                                <div class="text-center">
+                                    <a href="/my/designs" class="btn btn-primary">Back to List</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </t>
-</template>
+        </t>
+    </template>
+
     <template id="create_design_template" name="Create Design">
         <t t-call="portal.portal_layout">
             <div class="container">
