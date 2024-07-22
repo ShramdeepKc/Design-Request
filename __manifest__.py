@@ -30,7 +30,9 @@ Long description of module's purpose
     'assets': {
         'web.assets_frontend': [
             'design_request/static/src/css/custom_styles.css',
+
         ],
+
     },
         # only loaded in demonstration mode
         'demo': [],
