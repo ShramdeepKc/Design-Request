@@ -1,0 +1,18 @@
+.card-header {
+    background-color: #007bff; /* Primary color */
+    color: #ffffff;
+}
+
+.card-body {
+    background-color: #f8f9fa; /* Light gray background */
+}
+
+.card {
+    border-radius: 0.5rem; /* Rounded corners */
+}
+
+.img-fluid {
+    border: 1px solid #dee2e6; /* Light border around the image */
+}
+
+

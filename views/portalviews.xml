@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home" inherit_id="portal.portal_my_home">
+        <xpath expr="//div[contains(@class, 'o_portal_my_home')]" position="inside">
+            <div t-call="portal.portal_docs_entry" class="pt-4">
+                <t t-set="icon">/portal/static/src/img/portal-addresses.svg</t>
+                <t t-set="title">Design Requests</t>
+                <t t-set="text">Add, remove or view your designs</t>
+                <t t-set="url">/my/designs</t>
+                <t t-set="config_card">True</t>
+            </div>
+        </xpath>
+    </template>
+    
+    <template id="portal_breadcrumbs" inherit_id="portal.portal_breadcrumbs">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'design_lists' " class="breadcrumb-item">
+                <a href="/my/designs">Design</a>
+            </li>
+            <li t-if="page_name == 'create_design' " class="breadcrumb-item">
+                <a href="/my/designs">Design</a> / <a href="/my/create-design">Create Design</a>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="design_lists" name="Design Lists">
+        <t t-call="portal.portal_layout">
+            <t t-set="my_details" t-value="False"/>
+            <div class="wrapper col-12 d-flex flex-wrap justify-content-between align-items-center">
+                <h3 class="my-3">Nova Design Lists</h3>
+                <a href="/my/create-design" class="btn btn-primary py-2 d-flex align-items-center gap-2 ms-auto">
+                    New
+                </a>
+            </div>
+            <div class="my-3">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Customer Email</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="design_requests" t-as="design">
+                            <tr>
+                                <td t-esc="design.design_name"/>
+                                <td t-esc="design.customer_email"/>
+                                <td>
+                                    <div>
+                                        <a t-att-href="'/my/designs/' + str(design.id)" class="btn btn-info">View
+                                            Details
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="design_details_template">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-md-8 offset-md-2">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h2 class="mb-0">Design Request Details</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <p><strong>Name:</strong> <t t-esc="design.design_name"/></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Customer Email:</strong> <t t-esc="design.customer_email"/></p>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <p><strong>Design Image:</strong></p>
+                                    <t t-if="design.design_image">
+                                        <!-- Image preview with modal -->
+                                        <div class="image-preview" style="width: 100px; cursor: pointer;">
+                                            <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')"
+                                                alt="Design Image"
+                                                class="img-fluid rounded border design-image"
+                                                style="width: 100%; height: auto;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#designImageModal"/>
+                                        </div>
+                                        <!-- Modal for displaying full image -->
+                                        <div class="modal fade" id="designImageModal" tabindex="-1" aria-labelledby="designImageModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-fullscreen">
+                                                <div class="modal-content border-0">
+                                                    <div class="modal-header border-0">
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body p-0 text-center">
+                                                        <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')"
+                                                            alt="Design Image"
+                                                            class="img-fluid rounded"
+                                                            style="width: 100%; height: 90vh; object-fit: contain;" 
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <p class="text-muted">No Image</p>
+                                    </t>
+                                </div>
+                                <div class="text-center">
+                                    <a href="/my/designs" class="btn btn-primary">Back to List</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="create_design_template" name="Create Design">
+        <t t-call="portal.portal_layout">
+            <div class="container">
+                <h3>Create New Design</h3>
+                <form action="/my/create-design/submit" method="post" enctype="multipart/form-data"
+                      class="wrapper col-12 d-flex flex-column gap-3">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="form-group">
+                        <label for="design_name">Design Name</label>
+                        <input type="text" id="design_name" name="design_name" class="form-control" required="required"/>
+                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_name']" t-esc="errors['design_name']"/>
+                    </div>
+                    <div class="form-group"> 
+                        <label for="customer_email">Customer Email</label>
+                        <input type="email" class="form-control" id="customer_email" name="customer_email" required="required"/>
+                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['customer_email']" t-esc="errors['customer_email']"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="design_image">Upload Drawing</label>
+                        <input type="file" class="file" id="design_image" name="design_image" multiple="true" required="required"/>
+                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_image']" t-esc="errors['design_image']"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3 me-auto px-3">Submit</button>
+                </form>
+            </div>
+        </t>
+    </template>
+</odoo>
