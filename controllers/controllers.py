@@ -4,14 +4,10 @@ from odoo.addons.portal.controllers.portal import CustomerPortal as CustomerPort
 from odoo.http import request, route
 
 class CustomerPortalHome(CustomerPortal):
-    @route(['/my', '/my/home'], type='http', auth="user", website=True)
-    def home(self, **kw):
-        values = self._prepare_portal_layout_values()
-        return request.render("design_request.design_home", values)
 
     @route(['/my/designs'], type='http', auth="user", website=True)
     def lists(self, **kw):
-        values = self._prepare_portal_layout_values()
+        values = {'values': self._prepare_portal_layout_values(), 'page_name': 'design_lists'}
         return request.render("design_request.design_lists", values)
 
     @http.route(['/my/create-design'], type='http', auth="user", website=True)
@@ -26,4 +22,5 @@ class CustomerPortalHome(CustomerPortal):
                 'design_name': design_name,
             })
         return request.redirect('/my/designs')
+
 
