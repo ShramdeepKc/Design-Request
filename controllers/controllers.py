@@ -4,6 +4,7 @@ from odoo.addons.portal.controllers.portal import CustomerPortal as CustomerPort
 from odoo.http import request, route
 import base64
 
+
 class CustomerPortalHome(CustomerPortal):
     @http.route(['/my/designs'], type='http', auth="user", website=True)
     def lists(self, **kw):
@@ -46,4 +47,13 @@ class CustomerPortalHome(CustomerPortal):
         values = {'page_name': 'create_design', 'errors': errors}
         return request.render("design_request.create_design_template", values)
 
+    @http.route('/my/designs/<model("design_request.design_request"):design>/', type='http', auth='user', website=True)
+    def design_details(self, design, **kw):
+        # Check if the design exists
+        if not design.exists():
+            return request.not_found()  # Return 404 if design does not exist
 
+        # Pass the specific design request to the template
+        return request.render('design_request.design_details_template', {
+            'design': design
+        })

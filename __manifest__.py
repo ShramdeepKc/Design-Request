@@ -18,7 +18,7 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','web', 'portal'],
+    'depends': ['base', 'web', 'portal'],
 
     # always loaded
     'data': [
@@ -27,12 +27,15 @@ Long description of module's purpose
         'views/portalviews.xml',
 
     ],
-    # only loaded in demonstration mode
-    'demo': [],
-    'installable': True,
-    'application': True,
-    'auto_install': True,
+    'assets': {
+        'web.assets_frontend': [
+            'design_request/static/src/css/custom_styles.css',
+        ],
+    },
+        # only loaded in demonstration mode
+        'demo': [],
+        'installable': True,
+        'application': True,
+        'auto_install': True,
 
-
-}
-
+    }
