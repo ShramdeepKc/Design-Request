@@ -23,7 +23,6 @@ class CustomerPortalHome(CustomerPortal):
         design_name = kw.get('design_name')
         customer_email = kw.get('customer_email')
         design_image = request.httprequest.files.get('design_image')
-        print("iamge", design_image)
         # Check if design_name is provided to prevent empty submissions
         if design_name and design_image:
             # Handle file upload
