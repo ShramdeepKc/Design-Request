@@ -11,6 +11,16 @@
             </div>
         </xpath>
     </template>
+    <template id="portal_breadcrumbs" inherit_id="portal.portal_breadcrumbs">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'design_lists' " class="breadcrumb-item">
+                <a href="/my/designs">Design</a>
+            </li>
+            <li t-if="page_name == 'create_design' " class="breadcrumb-item">
+                <a href="/my/designs">Design</a> / <a href="/my/create-design">Create Design</a>
+            </li>
+        </xpath>
+    </template>
     <template id="design_lists" name="Design Lists">
         <t t-call="portal.portal_layout">
             <t t-set="my_details" t-value="False"/>
@@ -35,44 +45,51 @@
                 </div>
             </div>
             <div class="my-3">
-                    <table class="table table-striped">
-                        <thead>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Customer Email</th>
+                            <th>Drawing</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="design_requests" t-as="design">
                             <tr>
-                                <th>Name</th>
+                                <td t-esc="design.design_name"/>
+                                <td t-esc="design.customer_email"/>
+                                <td>
+                                    <img t-if="design.design_image" t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')" alt="design_img" class="rounded-circle img-fluid" style="width: 60px;"/>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="design_requests" t-as="design">
-                                <tr>
-                                    <td t-esc="design.design_name"/>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
-                </div>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
         </t>
     </template>
     <template id="create_design_template" name="Create Design">
         <t t-call="portal.portal_layout">
             <div class="container">
                 <h3>Create New Design</h3>
-                <form action="/my/create-design/submit" method="post">
+                <form action="/my/create-design/submit" method="post" enctype="multipart/form-data" class="wrapper col-12 d-flex flex-column gap-3">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <div class="form-group">
                         <label for="design_name">Design Name</label>
                         <input type="text" id="design_name" name="design_name" class="form-control" required="required"/>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                    <div class="form-group">
+                        <label for="customer_email">Customer Email</label>
+                        <input type="email" class="form-control" id="customer_email" name="customer_email" required="required"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="design_image">Upload Drawing</label>
+                        <!-- <input type="file" class="form-control-file" id="design_image" name="design_image" accept=".pdf,.png,.jpg,.jpeg" required="required"/> -->
+                        <input type="file" class="file" id="design_image" name="design_image" multiple="true" data-show-upload="true" data-show-caption="true" lass="file" data-show-preview="true" />
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3 me-auto px-3">Submit</button>
                 </form>
             </div>
         </t>
-    </template>
-
-    <template id="portal_breadcrumbs" inherit_id="portal.portal_breadcrumbs">
-        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
-            <li t-if="page_name == 'design_lists' " class="breadcrumb-item">
-                <a href="/my/designs">Design</a>
-            </li>
-        </xpath>
     </template>
 </odoo>
