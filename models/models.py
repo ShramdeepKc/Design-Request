@@ -9,5 +9,5 @@ class design_request(models.Model):
 
     design_name = fields.Char(string='Design Name')
     customer_email = fields.Char(string='Customer Email')
-    design_image = fields.Image(string='Design Image', attachment=True, max_width=100, max_height=100)
+    design_image = fields.Image(string='Design Image', attachment=True)
 

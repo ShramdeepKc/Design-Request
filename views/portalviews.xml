@@ -59,7 +59,7 @@
                                 <td t-esc="design.design_name"/>
                                 <td t-esc="design.customer_email"/>
                                 <td>
-                                    <img t-if="design.design_image" t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')" alt="design_img" class="rounded-circle img-fluid" style="width: 60px;"/>
+                                    <img t-if="design.design_image" t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')" alt="design_img" class="rounded-circle img-fluid" style="width: 60px; height:60px;"/>
                                 </td>
                             </tr>
                         </t>
@@ -76,15 +76,19 @@
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <div class="form-group">
                         <label for="design_name">Design Name</label>
-                        <input type="text" id="design_name" name="design_name" class="form-control" required="required"/>
+                        <input type="text" id="design_name" name="design_name" class="form-control" />
+                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_name']" t-esc="errors['design_name']"/>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group"> 
                         <label for="customer_email">Customer Email</label>
-                        <input type="email" class="form-control" id="customer_email" name="customer_email" required="required"/>
+                        <input type="email" class="form-control" id="customer_email" name="customer_email" />
+                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['customer_email']" t-esc="errors['customer_email']"/>
+                       
                     </div>
                     <div class="form-group">
                         <label for="design_image">Upload Drawing</label>
                         <input type="file" class="file" id="design_image" name="design_image" multiple="true" />
+                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_image']" t-esc="errors['design_image']"/>
                     </div>
                     <button type="submit" class="btn btn-primary mt-3 me-auto px-3">Submit</button>
                 </form>
