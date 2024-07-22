@@ -53,7 +53,6 @@ class CustomerPortalHome(CustomerPortal):
         if not design.exists():
             return request.not_found()  # Return 404 if design does not exist
 
+        values = {'page_name': 'design_details', 'design': design}
         # Pass the specific design request to the template
-        return request.render('design_request.design_details_template', {
-            'design': design
-        })
+        return request.render('design_request.design_details_template', values)

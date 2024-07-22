@@ -11,14 +11,17 @@
             </div>
         </xpath>
     </template>
-    
+
     <template id="portal_breadcrumbs" inherit_id="portal.portal_breadcrumbs">
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
             <li t-if="page_name == 'design_lists' " class="breadcrumb-item">
                 <a href="/my/designs">Design</a>
             </li>
             <li t-if="page_name == 'create_design' " class="breadcrumb-item">
-                <a href="/my/designs">Design</a> / <a href="/my/create-design">Create Design</a>
+                <a href="/my/designs">Design</a> / <span>Create Design</span>
+            </li>
+            <li t-if="page_name == 'design_details' " class="breadcrumb-item">
+                <a href="/my/designs">Design</a> / <span>Details</span>
             </li>
         </xpath>
     </template>
@@ -42,17 +45,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-foreach="design_requests" t-as="design">
-                            <tr>
-                                <td t-esc="design.design_name"/>
-                                <td t-esc="design.customer_email"/>
-                                <td>
-                                    <div>
-                                        <a t-att-href="'/my/designs/' + str(design.id)" class="btn btn-info">View
-                                            Details
-                                        </a>
-                                    </div>
-                                </td>
+                        <t t-if="design_requests">
+                            <t t-foreach="design_requests" t-as="design">
+                                <tr>
+                                    <td t-esc="design.design_name"/>
+                                    <td t-esc="design.customer_email"/>
+                                    <td>
+                                        <div>
+                                            <a t-att-href="'/my/designs/' + str(design.id)" class="btn btn-info">View
+                                                Details
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                        <t t-if="not design_requests">
+                            <tr class="text-center">
+                                <td colspan="3">No data found</td>
                             </tr>
                         </t>
                     </tbody>
