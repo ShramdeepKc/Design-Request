@@ -35,21 +35,21 @@
                 </div>
             </div>
             <div class="my-3">
-                    <table class="table table-striped">
-                        <thead>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="design_requests" t-as="design">
                             <tr>
-                                <th>Name</th>
+                                <td t-esc="design.design_name"/>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="design_requests" t-as="design">
-                                <tr>
-                                    <td t-esc="design.design_name"/>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
-                </div>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
         </t>
     </template>
     <template id="create_design_template" name="Create Design">
@@ -57,22 +57,23 @@
             <div class="container">
                 <h3>Create New Design</h3>
                 <form action="/my/create-design/submit" method="post">
-                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <div class="form-group">
-                        <label for="design_name">Design Name</label>
-                        <input type="text" id="design_name" name="design_name" class="form-control" required="required"/>
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-3">Submit</button>
-                </form>
-            </div>
-        </t>
-    </template>
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="form-group">
+                    <label for="design_name">Design Name</label>
+                    <input type="text" id="design_name" name="design_name" class="form-control"
+                           required="required"/>
+                </div>
+            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        </form>
+    </div>
+</t>
+        </template>
 
-    <template id="portal_breadcrumbs" inherit_id="portal.portal_breadcrumbs">
-        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
-            <li t-if="page_name == 'design_lists' " class="breadcrumb-item">
-                <a href="/my/designs">Design</a>
-            </li>
-        </xpath>
-    </template>
-</odoo>
+<template id="portal_breadcrumbs" inherit_id="portal.portal_breadcrumbs">
+<xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+    <li t-if="page_name == 'design_lists' " class="breadcrumb-item">
+        <a href="/my/designs">Design</a>
+    </li>
+</xpath>
+</template>
+        </odoo>
