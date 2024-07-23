@@ -8,9 +8,11 @@ class DesignRequest(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     design_name = fields.Char(string='Design Name')
-    customer_id = fields.Integer(string='Customer')
+    customer_id = fields.Many2one('res.partner', string='Customer')
     customer_email = fields.Char(string='Customer Email')
+    description = fields.Text(string='Description')
     design_image = fields.Image(string='Design Image', attachment=True)
+    assigned_to = fields.Many2one('res.users', string='Assigned To')
     price_unit = fields.Float(string='Price')
     state = fields.Selection([
         ('draft', 'Draft'),

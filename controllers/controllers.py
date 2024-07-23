@@ -10,7 +10,15 @@ class CustomerPortalHome(CustomerPortal):
     @http.route(['/my/designs'], type='http', auth="user", website=True)
     def lists(self, **kw):
         design_requests = request.env['design_request.design_request'].sudo().search([])
-        values = {'design_requests': design_requests, 'page_name': 'design_lists', 'success':{}}
+
+        state_mapping = {
+            'draft': 'Draft',
+            'in_progress': 'In Progress',
+            'done': 'Done',
+            'ready_for_quotation': 'Ready for Quotation'
+        }
+            
+        values = {'design_requests': design_requests, 'page_name': 'design_lists', 'state_mapping': state_mapping}
         return request.render("design_request.design_lists", values)
 
     @http.route(['/my/create-design'], type='http', auth="user", website=True)
@@ -27,6 +35,7 @@ class CustomerPortalHome(CustomerPortal):
         design_name = kw.get('design_name')
         customer_id = kw.get('customer_id')
         customer_email = kw.get('customer_email')
+        description = kw.get('description')
         design_image = request.httprequest.files.get('design_image')
         if not design_name:
             errors["design_name"] = "Please enter design name"
@@ -47,6 +56,7 @@ class CustomerPortalHome(CustomerPortal):
                     'design_name': design_name,
                     'customer_id': customer_id,
                     'customer_email': customer_email,
+                    'description': description,
                     'design_image': encoded_image,
                 })
                 return request.redirect('/my/designs')
