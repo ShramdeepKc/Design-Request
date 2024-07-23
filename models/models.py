@@ -3,13 +3,14 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 
-
-class design_request(models.Model):
+class DesignRequest(models.Model):
     _name = 'design_request.design_request'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     design_name = fields.Char(string='Design Name')
+    customer_id = fields.Many2one('res.partner', string='Customer')
     customer_email = fields.Char(string='Customer Email')
+    description = fields.Text(string='Description')
     design_image = fields.Image(string='Design Image', attachment=True)
     price_unit = fields.Float(string='Price')
     assigned_employees = fields.Many2one('hr.employee', string='Assigned Employees',
@@ -17,7 +18,8 @@ class design_request(models.Model):
     video_file = fields.Binary(string='Video File')
     video_filename = fields.Char(string='Video Filename')
     completed_design = fields.Image(string='Completed Design', attachment=True)
-
+    assigned_to = fields.Many2one('res.users', string='Assigned To')
+    price_unit = fields.Float(string='Price')
     state = fields.Selection([
         ('draft', 'Draft'),
         ('in_progress', 'In Progress'),
@@ -45,6 +47,13 @@ class design_request(models.Model):
             self.write({'state': 'in_progress'})
 
         return res
+
+    def action_start(self):
+        for record in self:
+            if record.state in ['done', 'ready_for_quotation']:
+                raise UserError("Cannot move to 'In Progress' from 'Done' or 'Ready for Quotation'.")
+            record.write({'state': 'in_progress'})
+
 
     def action_done(self):
         for record in self:

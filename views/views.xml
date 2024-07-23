@@ -43,8 +43,6 @@
                             <field name="video_file" class="oe_inline oe_invisible_modifier col-md-6"/>
                             <field name="video_filename" class="oe_inline oe_invisible_modifier col-md-6"/>
                             <field name="completed_design" class="oe_inline oe_invisible_modifier col-md-6"/>
-
-
                         </group>
 
 
