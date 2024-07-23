@@ -3,7 +3,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 
-class DesignRequest(models.Model):
+class design_request(models.Model):
     _name = 'design_request.design_request'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
@@ -18,7 +18,6 @@ class DesignRequest(models.Model):
     video_file = fields.Binary(string='Video File')
     video_filename = fields.Char(string='Video Filename')
     completed_design = fields.Image(string='Completed Design', attachment=True)
-    assigned_to = fields.Many2one('res.users', string='Assigned To')
     price_unit = fields.Float(string='Price')
     state = fields.Selection([
         ('draft', 'Draft'),
