@@ -18,10 +18,10 @@
                 <a href="/my/designs">Design</a>
             </li>
             <li t-if="page_name == 'create_design' " class="breadcrumb-item">
-                <a href="/my/designs">Design</a> / <span>Create Design</span>
+                <a href="/my/designs">Design</a> /                <span>Create Design</span>
             </li>
             <li t-if="page_name == 'design_details' " class="breadcrumb-item">
-                <a href="/my/designs">Design</a> / <span>Details</span>
+                <a href="/my/designs">Design</a> /                <span>Details</span>
             </li>
         </xpath>
     </template>
@@ -83,23 +83,26 @@
                             <div class="card-body">
                                 <div class="row mb-3">
                                     <div class="col-md-6">
-                                        <p><strong>Name:</strong> <t t-esc="design.design_name"/></p>
+                                        <p>
+                                            <strong>Name:</strong>
+                                            <t t-esc="design.design_name"/>
+                                        </p>
                                     </div>
                                     <div class="col-md-6">
-                                        <p><strong>Customer Email:</strong> <t t-esc="design.customer_email"/></p>
+                                        <p>
+                                            <strong>Customer Email:</strong>
+                                            <t t-esc="design.customer_email"/>
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="mb-4">
-                                    <p><strong>Design Image:</strong></p>
+                                    <p>
+                                        <strong>Design Image:</strong>
+                                    </p>
                                     <t t-if="design.design_image">
                                         <!-- Image preview with modal -->
                                         <div class="image-preview" style="width: 100px; cursor: pointer;">
-                                            <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')"
-                                                alt="Design Image"
-                                                class="img-fluid rounded border design-image"
-                                                style="width: 100%; height: auto;"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#designImageModal"/>
+                                            <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')" alt="Design Image" class="img-fluid rounded border design-image" style="width: 100%; height: auto;" data-bs-toggle="modal" data-bs-target="#designImageModal"/>
                                         </div>
                                         <!-- Modal for displaying full image -->
                                         <div class="modal fade" id="designImageModal" tabindex="-1" aria-labelledby="designImageModalLabel" aria-hidden="true">
@@ -109,11 +112,7 @@
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body p-0 text-center">
-                                                        <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')"
-                                                            alt="Design Image"
-                                                            class="img-fluid rounded"
-                                                            style="width: 100%; height: 90vh; object-fit: contain;" 
-                                                        />
+                                                        <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')" alt="Design Image" class="img-fluid rounded" style="width: 100%; height: 100%; object-fit: contain;" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -138,22 +137,22 @@
         <t t-call="portal.portal_layout">
             <div class="container">
                 <h3>Create New Design</h3>
-                <form action="/my/create-design/submit" method="post" enctype="multipart/form-data"
-                      class="wrapper col-12 d-flex flex-column gap-3">
+                <form action="/my/create-design/submit" method="post" enctype="multipart/form-data" class="wrapper col-12 d-flex flex-column gap-3">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="customer_id" t-att-value="customer_id"/>
                     <div class="form-group">
                         <label for="design_name">Design Name</label>
                         <input type="text" id="design_name" name="design_name" class="form-control" required="required"/>
                         <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_name']" t-esc="errors['design_name']"/>
                     </div>
-                    <div class="form-group"> 
+                    <div class="form-group">
                         <label for="customer_email">Customer Email</label>
-                        <input type="email" class="form-control" id="customer_email" name="customer_email" required="required"/>
+                        <input type="email" class="form-control" id="customer_email" name="customer_email" required="required" t-att-value="customer_email"/>
                         <div class="alert alert-danger mt-2" role="alert" t-if="errors['customer_email']" t-esc="errors['customer_email']"/>
                     </div>
                     <div class="form-group">
                         <label for="design_image">Upload Drawing</label>
-                        <input type="file" class="file" id="design_image" name="design_image" multiple="true" required="required"/>
+                        <input type="file" class="file" id="design_image" name="design_image" accept=".jpg,.jpeg,.png,.webp" required="required"/>
                         <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_image']" t-esc="errors['design_image']"/>
                     </div>
                     <button type="submit" class="btn btn-primary mt-3 me-auto px-3">Submit</button>

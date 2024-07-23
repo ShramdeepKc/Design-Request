@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import http
 from odoo.addons.portal.controllers.portal import CustomerPortal as CustomerPortal
-from odoo.http import request, route
+from odoo.http import request
+from PIL import UnidentifiedImageError
 import base64
 
 
@@ -14,7 +15,8 @@ class CustomerPortalHome(CustomerPortal):
 
     @http.route(['/my/create-design'], type='http', auth="user", website=True)
     def create_design(self, **kw):
-        values = {'page_name': 'create_design', 'errors': {"design_name": "", "customer_email": "", "design_image": ""}}
+        user = request.env.user
+        values = {'page_name': 'create_design', 'customer_email': user.email or "", 'customer_id': user.id, 'errors': {"design_name": "", "customer_email": "", "design_image": ""}}
         return request.render("design_request.create_design_template", values)
 
     @http.route('/my/create-design/submit', type='http', auth="user", methods=['POST'], website=True, csrf=True)
@@ -23,6 +25,7 @@ class CustomerPortalHome(CustomerPortal):
         errors = {"design_name": "", "customer_email": "", "design_image": ""}
         # Extract form data
         design_name = kw.get('design_name')
+        customer_id = kw.get('customer_id')
         customer_email = kw.get('customer_email')
         design_image = request.httprequest.files.get('design_image')
         if not design_name:
@@ -34,15 +37,23 @@ class CustomerPortalHome(CustomerPortal):
         
         if errors['design_name']=="" and errors['customer_email']=="" and errors['design_image']=="":
             try:
-                # Create a new design request records if there is no error
+                allowed_extensions = ['jpg', 'jpeg', 'png', 'webp']
+                file_extension = design_image.filename.split('.')[-1].lower()
+                if file_extension not in allowed_extensions:
+                    raise UnidentifiedImageError("Invalid image type")
+                
+                encoded_image = base64.b64encode(design_image.read())
                 request.env['design_request.design_request'].sudo().create({
                     'design_name': design_name,
+                    'customer_id': customer_id,
                     'customer_email': customer_email,
-                    'design_image': base64.b64encode(design_image.read()),
+                    'design_image': encoded_image,
                 })
                 return request.redirect('/my/designs')
+            except UnidentifiedImageError as e:
+                errors["design_image"] = "Invalid image type"
             except Exception as e:
-                errors["design_image"] = "Error processing design image: %s" % e
+                errors["design_image"] = f"Error processing design image: {e}"
             
         values = {'page_name': 'create_design', 'errors': errors}
         return request.render("design_request.create_design_template", values)
