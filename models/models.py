@@ -8,6 +8,7 @@ class design_request(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     design_name = fields.Char(string='Design Name')
+    customer_id = fields.Integer(string='Customer')
     customer_email = fields.Char(string='Customer Email')
     design_image = fields.Image(string='Design Image', attachment=True)
     state = fields.Selection([
