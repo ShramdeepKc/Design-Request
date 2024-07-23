@@ -18,7 +18,6 @@ class design_request(models.Model):
     video_file = fields.Binary(string='Video File')
     video_filename = fields.Char(string='Video Filename')
     completed_design = fields.Image(string='Completed Design', attachment=True)
-    price_unit = fields.Float(string='Price')
     state = fields.Selection([
         ('draft', 'Draft'),
         ('in_progress', 'In Progress'),
