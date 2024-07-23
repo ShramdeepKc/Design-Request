@@ -20,14 +20,14 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="action_start" type="object" string="Start" class="btn btn-primary"
-                                domain="[('state', '=', 'draft')]"/>
+<!--                        <button name="action_start" type="object" string="Start" class="btn btn-primary"-->
+<!--                                domain="[('state', '=', 'draft')]"/>-->
                         <button name="action_done" type="object" string="Done" class="btn btn-secondary"
                                 domain="[('state', '=', 'in_progress')]"/>
                         <button name="action_ready_for_quotation" type="object" string="Ready for Quotation"
-                                class="btn btn-secondary"
+                                class="btn btn-primary"
                                 domain="[('state', '=', 'done')]"/>
-                        <button name="action_cancel" type="object" string="Cancel" class="btn btn-danger"
+                        <button name="action_cancel" type="object" string="Cancel" class="btn btn-secondary"
                                 domain="[('state', 'not in', ['ready_for_quotation', 'cancelled'])]"/>
                         <field name="state" widget="statusbar"
                                statusbar_visible="draft,in_progress,done,ready_for_quotation,cancelled"/>
@@ -38,10 +38,20 @@
                             <field name="customer_email" class="oe_inline oe_invisible_modifier col-md-10"/>
                             <field name="design_image" class="oe_inline oe_invisible_modifier col-md-6"/>
                             <field name="price_unit" class="oe_inline oe_invisible_modifier col-md-6"/>
+                            <field name="assigned_employees" class="oe_inline oe_invisible_modifier col-md-6"
+                                   domain="[('department_id.name', '=', 'Designing Team')]"/>
+                            <field name="video_file" class="oe_inline oe_invisible_modifier col-md-6"/>
+                            <field name="video_filename" class="oe_inline oe_invisible_modifier col-md-6"/>
+                            <field name="completed_design" class="oe_inline oe_invisible_modifier col-md-6"/>
                         </group>
 
 
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+
                 </form>
             </field>
         </record>

@@ -12,6 +12,12 @@ class DesignRequest(models.Model):
     customer_email = fields.Char(string='Customer Email')
     description = fields.Text(string='Description')
     design_image = fields.Image(string='Design Image', attachment=True)
+    price_unit = fields.Float(string='Price')
+    assigned_employees = fields.Many2one('hr.employee', string='Assigned Employees',
+                                          domain="[('department_id.name', '=', 'Designing Team')]")
+    video_file = fields.Binary(string='Video File')
+    video_filename = fields.Char(string='Video Filename')
+    completed_design = fields.Image(string='Completed Design', attachment=True)
     assigned_to = fields.Many2one('res.users', string='Assigned To')
     price_unit = fields.Float(string='Price')
     state = fields.Selection([
@@ -22,11 +28,32 @@ class DesignRequest(models.Model):
         ('cancelled', 'Cancelled')
     ], default='draft', track_visibility='onchange')
 
+    @api.model
+    def create(self, vals):
+        # Create the record
+        record = super(design_request, self).create(vals)
+
+        # Change state to 'in_progress' if initially 'draft'
+        if record.state == 'draft' and record.assigned_employees:
+            record.write({'state': 'in_progress'})
+
+        return record
+
+    def write(self, vals):
+        res = super(design_request, self).write(vals)
+
+        # Change state to 'in_progress' if currently 'draft' and assigned_employee is set
+        if self.state == 'draft' and self.assigned_employees:
+            self.write({'state': 'in_progress'})
+
+        return res
+
     def action_start(self):
         for record in self:
             if record.state in ['done', 'ready_for_quotation']:
                 raise UserError("Cannot move to 'In Progress' from 'Done' or 'Ready for Quotation'.")
             record.write({'state': 'in_progress'})
+
 
     def action_done(self):
         for record in self:
