@@ -20,26 +20,20 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-<!--                        <button name="action_start" type="object" string="Start" class="btn btn-primary"-->
-<!--                                domain="[('state', '=', 'draft')]"/>-->
-                        <button name="action_done" type="object" string="Done" class="btn btn-secondary"
-                                domain="[('state', '=', 'in_progress')]"/>
-                        <button name="action_ready_for_quotation" type="object" string="Ready for Quotation"
-                                class="btn btn-primary"
-                                domain="[('state', '=', 'done')]"/>
-                        <button name="action_cancel" type="object" string="Cancel" class="btn btn-secondary"
-                                domain="[('state', 'not in', ['ready_for_quotation', 'cancelled'])]"/>
-                        <field name="state" widget="statusbar"
-                               statusbar_visible="draft,in_progress,done,ready_for_quotation,cancelled"/>
+                        <!--                        <button name="action_start" type="object" string="Start" class="btn btn-primary"-->
+                        <!-- domain="[('state', '=', 'draft')]"/>-->
+                        <button name="action_done" type="object" string="Done" class="btn btn-secondary" domain="[('state', '=', 'in_progress')]"/>
+                        <button name="action_ready_for_quotation" type="object" string="Ready for Quotation" class="btn btn-primary" domain="[('state', '=', 'done')]"/>
+                        <button name="action_cancel" type="object" string="Cancel" class="btn btn-secondary" domain="[('state', 'not in', ['ready_for_quotation', 'cancelled'])]"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done,ready_for_quotation,cancelled"/>
                     </header>
                     <sheet>
                         <group>
                             <field name="design_name" class="oe_inline oe_invisible_modifier col-md-10"/>
                             <field name="customer_email" class="oe_inline oe_invisible_modifier col-md-10"/>
-                            <field name="design_image" class="oe_inline oe_invisible_modifier col-md-6"/>
-                            <field name="price_unit" class="oe_inline oe_invisible_modifier col-md-6"/>
-                            <field name="assigned_employees" class="oe_inline oe_invisible_modifier col-md-6"
-                                   domain="[('department_id.name', '=', 'Designing Team')]"/>
+                            <field name="design_image" widget="image" class="oe_inline oe_invisible_modifier col-md-6" options="{'size': [200, 200]}"/>
+                            <field name="price_unit" class="oe_inline col-md-6"/>
+                            <field name="assigned_employees" class="oe_inline oe_invisible_modifier col-md-6" domain="[('department_id.name', '=', 'Designing Team')]"/>
                             <field name="video_file" class="oe_inline oe_invisible_modifier col-md-6"/>
                             <field name="video_filename" class="oe_inline oe_invisible_modifier col-md-6"/>
                             <field name="completed_design" class="oe_inline oe_invisible_modifier col-md-6"/>
@@ -71,8 +65,7 @@
         <menuitem name="Design Lists" id="design_request_menu_list" parent="design_request_menu_root"/>
 
         <!-- Actions -->
-        <menuitem name="List" id="design_request_menu_list_action" parent="design_request_menu_list"
-                  action="design_request_action_window"/>
+        <menuitem name="List" id="design_request_menu_list_action" parent="design_request_menu_list" action="design_request_action_window"/>
 
     </data>
 </odoo>
