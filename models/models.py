@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 
 
 class design_request(models.Model):
@@ -8,21 +9,48 @@ class design_request(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     design_name = fields.Char(string='Design Name')
-    customer_id = fields.Integer(string='Customer')
     customer_email = fields.Char(string='Customer Email')
     design_image = fields.Image(string='Design Image', attachment=True)
+    price_unit = fields.Float(string='Price')
+    assigned_employees = fields.Many2one('hr.employee', string='Assigned Employees',
+                                          domain="[('department_id.name', '=', 'Designing Team')]")
+    video_file = fields.Binary(string='Video File')
+    video_filename = fields.Char(string='Video Filename')
+    completed_design = fields.Image(string='Completed Design', attachment=True)
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('in_progress', 'In Progress'),
         ('done', 'Done'),
-        ('ready_for_quotation', 'Ready for Quotation')
+        ('ready_for_quotation', 'Ready for Quotation'),
+        ('cancelled', 'Cancelled')
     ], default='draft', track_visibility='onchange')
 
-    def action_start(self):
-        self.write({'state': 'in_progress'})
+    @api.model
+    def create(self, vals):
+        # Create the record
+        record = super(design_request, self).create(vals)
+
+        # Change state to 'in_progress' if initially 'draft'
+        if record.state == 'draft' and record.assigned_employees:
+            record.write({'state': 'in_progress'})
+
+        return record
+
+    def write(self, vals):
+        res = super(design_request, self).write(vals)
+
+        # Change state to 'in_progress' if currently 'draft' and assigned_employee is set
+        if self.state == 'draft' and self.assigned_employees:
+            self.write({'state': 'in_progress'})
+
+        return res
 
     def action_done(self):
-        self.write({'state': 'done'})
+        for record in self:
+            if record.state == 'ready_for_quotation':
+                raise UserError("Cannot move to 'Done' once it is 'Ready for Quotation'.")
+            record.write({'state': 'done'})
 
     def action_ready_for_quotation(self):
         for record in self:
@@ -37,12 +65,12 @@ class design_request(models.Model):
                 })
 
             # Find a product for the sales order line
-            product = self.env['product.product'].search([('name', '=', 'Default Product')], limit=1)
+            product = self.env['product.product'].search([('name', '=', record.design_name)], limit=1)
             if not product:
                 # Optionally handle the case where no product is found
                 product = self.env['product.product'].create({
-                    'name': 'Default Product',
-                    'list_price': 100.0,  # Replace with your actual price
+                    'name': record.design_name,
+                    'list_price': record.price_unit,  # Use the correct price unit
                 })
 
             # Create a sales quotation
@@ -50,10 +78,10 @@ class design_request(models.Model):
                 'partner_id': partner.id,
                 'order_line': [(0, 0, {
                     'name': record.design_name,
-                    'product_id': product.id,
+                    'product_id': product.id,  # Use the product's ID
                     'product_uom_qty': 1,  # Specify quantity
                     'product_uom': product.uom_id.id,  # Specify unit of measure
-                    'price_unit': 100.0,  # Replace with your actual price or calculation
+                    'price_unit': record.price_unit,  # Correctly use price_unit
                 })],
                 'state': 'draft',
             })
@@ -76,3 +104,8 @@ class design_request(models.Model):
                 'target': 'current',
             }
 
+    def action_cancel(self):
+        for record in self:
+            if record.state in ['ready_for_quotation']:
+                raise UserError("Cannot move to 'Cancelled' once it is 'Ready for Quotation'.")
+            record.write({'state': 'cancelled'})
