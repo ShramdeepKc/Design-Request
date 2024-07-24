@@ -86,6 +86,8 @@ class design_request(models.Model):
             # Create a sales quotation
             quotation = self.env['sale.order'].create({
                 'partner_id': partner.id,
+                'design_request_id': record.id,
+
                 'order_line': [(0, 0, {
                     'name': record.design_name,
                     'product_id': product.id,  # Use the product's ID
@@ -136,4 +138,3 @@ class design_request(models.Model):
                     _logger.error(f"Failed to send email to {record.customer_email}: {str(e)}")
             else:
                 _logger.warning(f"No customer email provided for record {record.id}")
-
