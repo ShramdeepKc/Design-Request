@@ -2,6 +2,10 @@
 
 from odoo import models, fields, api
 from odoo.exceptions import UserError
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 class design_request(models.Model):
     _name = 'design_request.design_request'
@@ -14,15 +18,15 @@ class design_request(models.Model):
     design_image = fields.Image(string='Design Image', attachment=True)
     price_unit = fields.Float(string='Price')
     assigned_employees = fields.Many2one('hr.employee', string='Assigned Employees',
-                                          domain="[('department_id.name', '=', 'Designing Team')]")
+                                         domain="[('department_id.name', '=', 'Designing Team')]")
     video_file = fields.Binary(string='Video File')
     video_filename = fields.Char(string='Video Filename')
     completed_design = fields.Image(string='Completed Design', attachment=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('in_progress', 'In Progress'),
-        ('done', 'Done'),
         ('ready_for_quotation', 'Ready for Quotation'),
+        ('generate_quotation', 'Generate Quotation'),
         ('cancelled', 'Cancelled')
     ], default='draft', track_visibility='onchange')
 
@@ -46,20 +50,19 @@ class design_request(models.Model):
 
         return res
 
-    def action_start(self):
-        for record in self:
-            if record.state in ['done', 'ready_for_quotation']:
-                raise UserError("Cannot move to 'In Progress' from 'Done' or 'Ready for Quotation'.")
-            record.write({'state': 'in_progress'})
-
-
-    def action_done(self):
-        for record in self:
-            if record.state == 'ready_for_quotation':
-                raise UserError("Cannot move to 'Done' once it is 'Ready for Quotation'.")
-            record.write({'state': 'done'})
+    # def action_start(self):
+    #     for record in self:
+    #         if record.state in ['done', 'ready_for_quotation']:
+    #             raise UserError("Cannot move to 'In Progress' from 'Done' or 'Ready for Quotation'.")
+    #         record.write({'state': 'in_progress'})
 
     def action_ready_for_quotation(self):
+        for record in self:
+            if record.state == 'generate_quotation':
+                raise UserError("Cannot move to 'in_progress' once it is 'Ready for Quotation'.")
+            record.write({'state': 'ready_for_quotation'})
+
+    def action_generate_quotation(self):
         for record in self:
             # Find the customer by email
             partner = self.env['res.partner'].search([('email', '=', record.customer_email)], limit=1)
@@ -94,7 +97,7 @@ class design_request(models.Model):
             })
 
             # Change the state of the design request
-            record.state = 'ready_for_quotation'
+            record.state = 'generate_quotation'
 
             # Post a message to the sales quotation
             quotation.message_post(body="Sales Quotation has been successfully generated for the design request.",
@@ -113,6 +116,24 @@ class design_request(models.Model):
 
     def action_cancel(self):
         for record in self:
-            if record.state in ['ready_for_quotation']:
-                raise UserError("Cannot move to 'Cancelled' once it is 'Ready for Quotation'.")
+            if record.state in ['generate_quotation']:
+                raise UserError("Cannot move to 'Cancelled' once quotation is generated.")
             record.write({'state': 'cancelled'})
+
+    def action_send_mail(self):
+        template = self.env.ref('design_request.design_request_in_progress_email_template')
+        if not template:
+            _logger.error("Email template not found")
+            return
+
+        for record in self:
+            if record.customer_email:
+                try:
+                    # Ensure the email template is sent to the correct record
+                    template.send_mail(record.id, force_send=True)
+                    _logger.info(f"Email successfully sent to {record.customer_email}")
+                except Exception as e:
+                    _logger.error(f"Failed to send email to {record.customer_email}: {str(e)}")
+            else:
+                _logger.warning(f"No customer email provided for record {record.id}")
+
