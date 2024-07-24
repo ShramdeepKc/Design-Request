@@ -15,6 +15,7 @@ class CustomerPortalHome(CustomerPortal):
             'draft': 'Draft',
             'in_progress': 'In Progress',
             'done': 'Done',
+            'generate_quotation': 'Quotation Generated',
             'ready_for_quotation': 'Ready for Quotation'
         }
             

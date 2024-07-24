@@ -20,10 +20,14 @@
                 <a href="/my/designs">Design</a>
             </li>
             <li t-if="page_name == 'create_design' " class="breadcrumb-item">
-                <a href="/my/designs">Design</a> /                <span>Create Design</span>
+                <a href="/my/designs">Design</a>
+                /
+                <span>Create Design</span>
             </li>
             <li t-if="page_name == 'design_details' " class="breadcrumb-item">
-                <a href="/my/designs">Design</a> /                <span>Details</span>
+                <a href="/my/designs">Design</a>
+                /
+                <span>Details</span>
             </li>
         </xpath>
     </template>
@@ -108,17 +112,26 @@
                                             <t t-if="design.design_image">
                                                 <!-- Image preview with modal -->
                                                 <div class="image-preview" style="width: 300px; cursor: pointer;">
-                                                    <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')" alt="Design Image" class="img-fluid rounded border design-image" style="width: 100%; height: auto;" data-bs-toggle="modal" data-bs-target="#designImageModal"/>
+                                                    <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')"
+                                                         alt="Design Image"
+                                                         class="img-fluid rounded border design-image"
+                                                         style="width: 100%; height: auto;" data-bs-toggle="modal"
+                                                         data-bs-target="#designImageModal"/>
                                                 </div>
                                                 <!-- Modal for displaying full image -->
-                                                <div class="modal fade" id="designImageModal" tabindex="-1" aria-labelledby="designImageModalLabel" aria-hidden="true">
+                                                <div class="modal fade" id="designImageModal" tabindex="-1"
+                                                     aria-labelledby="designImageModalLabel" aria-hidden="true">
                                                     <div class="modal-dialog modal-fullscreen">
                                                         <div class="modal-content border-0">
                                                             <div class="modal-header border-0">
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body p-0 text-center">
-                                                                <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')" alt="Design Image" class="img-fluid rounded" style="width: 100%; height: 100%; object-fit: contain;" />
+                                                                <img t-att-src="'data:image/png;base64,' + design.design_image.decode('utf-8')"
+                                                                     alt="Design Image" class="img-fluid rounded"
+                                                                     style="width: 100%; height: 100%; object-fit: contain;"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -134,8 +147,10 @@
                                             <h5>CAD Design:</h5>
                                             <t t-if="design.video_file">
                                                 <div class="video-preview" style="width: 300px; cursor: pointer;">
-                                                    <video class="img-fluid rounded border video-thumbnail" style="width: 100%; height: auto;" controls="true">
-                                                        <source t-att-src="'data:video/mp4;base64,' + design.video_file.decode('utf-8')" type="video/mp4" />
+                                                    <video class="img-fluid rounded border video-thumbnail"
+                                                           style="width: 100%; height: auto;" controls="true">
+                                                        <source t-att-src="'data:video/mp4;base64,' + design.video_file.decode('utf-8')"
+                                                                type="video/mp4"/>
                                                         Your browser does not support the video tag.
                                                     </video>
                                                 </div>
@@ -149,17 +164,26 @@
                                             <t t-if="design.completed_design">
                                                 <!-- Image preview with modal -->
                                                 <div class="image-preview" style="width: 300px; cursor: pointer;">
-                                                    <img t-att-src="'data:image/png;base64,' + design.completed_design.decode('utf-8')" alt="Completed Image" class="img-fluid rounded border completed-image" style="width: 100%; height: auto;" data-bs-toggle="modal" data-bs-target="#completedImageModal"/>
+                                                    <img t-att-src="'data:image/png;base64,' + design.completed_design.decode('utf-8')"
+                                                         alt="Completed Image"
+                                                         class="img-fluid rounded border completed-image"
+                                                         style="width: 100%; height: auto;" data-bs-toggle="modal"
+                                                         data-bs-target="#completedImageModal"/>
                                                 </div>
                                                 <!-- Modal for displaying full image -->
-                                                <div class="modal fade" id="completedImageModal" tabindex="-1" aria-labelledby="completedImageModalLabel" aria-hidden="true">
+                                                <div class="modal fade" id="completedImageModal" tabindex="-1"
+                                                     aria-labelledby="completedImageModalLabel" aria-hidden="true">
                                                     <div class="modal-dialog modal-fullscreen">
                                                         <div class="modal-content border-0">
                                                             <div class="modal-header border-0">
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body p-0 text-center">
-                                                                <img t-att-src="'data:image/png;base64,' + design.completed_design.decode('utf-8')" alt="Completed Image" class="img-fluid rounded" style="width: 100%; height: 100%; object-fit: contain;" />
+                                                                <img t-att-src="'data:image/png;base64,' + design.completed_design.decode('utf-8')"
+                                                                     alt="Completed Image" class="img-fluid rounded"
+                                                                     style="width: 100%; height: 100%; object-fit: contain;"/>
                                                             </div>
                                                         </div>
                                                     </div>
