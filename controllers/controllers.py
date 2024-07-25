@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import http
 from odoo.addons.portal.controllers.portal import CustomerPortal as CustomerPortal
+
+from odoo.exceptions import UserError
 from odoo.http import request
 from PIL import UnidentifiedImageError
 import base64
@@ -15,16 +17,37 @@ class CustomerPortalHome(CustomerPortal):
     def lists(self, **kw):
         design_requests = request.env['design_request.design_request'].sudo().search([])
 
-
         state_mapping = {
             'draft': 'Draft',
             'in_progress': 'In Progress',
             'done': 'Done',
             'generate_quotation': 'Quotation Generated',
-            'ready_for_quotation': 'Ready for Quotation'
+            'ready_for_quotation': 'Ready for Quotation',
+            'send_for_client_review': 'Quotation Review',
+            'cancelled': 'Cancelled',
+            'sale': 'Sale Order Confirmed',
         }
 
-        values = {'design_requests': design_requests, 'page_name': 'design_lists', 'state_mapping': state_mapping}
+        # Create a dictionary to map design IDs to their respective states
+        design_states = {}
+
+        for design in design_requests:
+            sale_orders = request.env['sale.order'].sudo().search([
+                ('design_request_id', '=', design.id)
+            ])
+            # Determine if any related sale orders are confirmed
+            if sale_orders.filtered(lambda o: o.state == 'sale'):
+                design_states[design.id] = 'sale'
+            else:
+                design_states[design.id] = design.state  # Keep original state if no sale orders are confirmed
+
+        values = {
+            'design_requests': design_requests,
+            'page_name': 'design_lists',
+            'state_mapping': state_mapping,
+            'design_states': design_states
+        }
+
         return request.render("design_request.design_lists", values)
 
     @http.route(['/my/create-design'], type='http', auth="user", website=True)
@@ -75,23 +98,64 @@ class CustomerPortalHome(CustomerPortal):
         values = {'page_name': 'create_design', 'errors': errors}
         return request.render("design_request.create_design_template", values)
 
-    @http.route('/my/designs/<model("design_request.design_request"):design>/', type='http', auth='user', website=True)
+    from odoo import http
+    from odoo.http import request
+    import logging
+
+    _logger = logging.getLogger(__name__)
+
+    @http.route('/my/designs/<model("design_request.design_request"):design>/', type='http', auth='user',
+                website=True)
     def design_details(self, design, **kw):
-
-        # Fetch the related sale orders for the design request
-        sale_orders = http.request.env['sale.order'].sudo().search([
-            ('design_request_id', '=', design.id),
-            ('state', '=', 'draft')  # You can adjust the state or conditions as needed
-        ])
-
-        # Print or log the sale orders
-        _logger.info("Sale Orders for Design Request ID %s: %s", design.id, sale_orders)
-        print("Sale Orders for Design Request ID {}: {}".format(design.id, sale_orders))
-
         # Check if the design exists
         if not design.exists():
             return request.not_found()  # Return 404 if design does not exist
 
+        # Ensure the design state is 'send_for_client_review' before fetching related sale orders
+        sale_orders = []
+        if design.state == 'send_for_client_review':
+            # Fetch the related sale orders for the design request
+            sale_orders = request.env['sale.order'].sudo().search([
+                ('design_request_id', '=', design.id),
+                ('state', 'in', ['draft', 'sale'])  # Adjust the states as needed
+            ])
+
+            # Print or log the sale orders
+            _logger.info("Sale Orders for Design Request ID %s: %s", design.id, sale_orders)
+            print("Sale Orders for Design Request ID {}: {}".format(design.id, sale_orders))
+
         values = {'page_name': 'design_details', 'design': design, 'sale_orders': sale_orders}
         # Pass the specific design request to the template
         return request.render('design_request.design_details_template', values)
+
+    @http.route('/my/designs/<int:design_id>/accept_quotation', type='http', auth='user', website=True,
+                methods=['POST'])
+    def accept_quotation(self, design_id, **kw):
+        # Fetch the design request
+        design = request.env['design_request.design_request'].sudo().browse(design_id)
+
+        if not design.exists():
+            return request.not_found()  # Return 404 if design does not exist
+
+        # Ensure the design state is 'send_for_client_review' before processing
+        if design.state != 'send_for_client_review':
+            return request.redirect('/my/designs/%d/?message=invalid_state' % design.id)
+
+        # Fetch the related sale orders
+        sale_orders = request.env['sale.order'].sudo().search([
+            ('design_request_id', '=', design.id)
+        ])
+
+        # Check if any sale order is already confirmed
+        confirmed_orders = sale_orders.filtered(lambda order: order.state in ['sale', 'done'])
+
+        if confirmed_orders:
+            return request.redirect('/my/designs/%d/?message=already_confirmed' % design.id)
+
+        # Confirm draft sale orders
+        draft_orders = sale_orders.filtered(lambda order: order.state == 'draft')
+        for order in draft_orders:
+            order.action_confirm()  # Confirm the sale order, changing its state to 'sale'
+
+        # Redirect back to the design details page with success message
+        return request.redirect('/my/designs/%d/?message=confirmation_success' % design.id)

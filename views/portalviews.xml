@@ -59,8 +59,7 @@
                                     <td t-esc="design.design_name"/>
                                     <td t-esc="design.customer_email"/>
                                     <td t-esc="design.create_date.strftime('%Y-%m-%d')"/>
-                                    <td t-esc="state_mapping[design.state]"/>
-                                    <td t-esc="design.customer_email"/>
+                                    <td t-esc="state_mapping[design_states[design.id]]"/>
                                     <td>
                                         <div>
                                             <a t-att-href="'/my/designs/' + str(design.id)" class="btn btn-info">View
@@ -73,7 +72,7 @@
                         </t>
                         <t t-if="not design_requests">
                             <tr class="text-center">
-                                <td colspan="3">No data found</td>
+                                <td colspan="5">No data found</td>
                             </tr>
                         </t>
                     </tbody>
@@ -81,6 +80,7 @@
             </div>
         </t>
     </template>
+
 
     <template id="design_details_template">
         <t t-call="portal.portal_layout">
@@ -92,6 +92,21 @@
                                 <h2 class="mb-0">Design Request Details</h2>
                             </div>
                             <div class="card-body">
+                                <!-- Message handling -->
+                                <t t-if="request.params.get('message')">
+                                    <div class="alert alert-info" role="alert">
+                                        <t t-if="request.params.get('message') == 'invalid_state'">
+                                            You can only accept quotations when the design request is under client
+                                            review.
+                                        </t>
+                                        <t t-if="request.params.get('message') == 'already_confirmed'">
+                                            Your quotation has already been confirmed and converted to a sale order.
+                                        </t>
+                                        <t t-if="request.params.get('message') == 'confirmation_success'">
+                                            Sale Order Confirmed
+                                        </t>
+                                    </div>
+                                </t>
                                 <div class="mb-5">
                                     <div class="col-md-6 mb-2">
                                         <h5>
@@ -241,6 +256,12 @@
                                         <i class="fa fa-arrow-left"></i>Back to List
                                     </a>
                                 </div>
+                                <t t-if="design.state == 'send_for_client_review'">
+                                    <form t-att-action="'/my/designs/%d/accept_quotation' % design.id" method="post">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="btn btn-primary">Accept Quotation</button>
+                                    </form>
+                                </t>
                             </div>
                         </div>
                     </div>

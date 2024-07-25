@@ -18,11 +18,12 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'web', 'portal' , 'mail','sale'],
+    'depends': ['base', 'web', 'portal', 'mail', 'sale'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         'views/views.xml',
         'views/portalviews.xml',
         'data/mail_template.xml',
@@ -35,10 +36,10 @@ Long description of module's purpose
         ],
 
     },
-        # only loaded in demonstration mode
-        'demo': [],
-        'installable': True,
-        'application': True,
-        'auto_install': True,
+    # only loaded in demonstration mode
+    'demo': [],
+    'installable': True,
+    'application': True,
+    'auto_install': True,
 
-    }
+}
