@@ -59,7 +59,7 @@
                                     <td t-esc="design.design_name"/>
                                     <td t-esc="design.customer_email"/>
                                     <td t-esc="design.create_date.strftime('%Y-%m-%d')"/>
-                                    <td t-esc="state_mapping[design.state]"/>
+                                    <td t-esc="state_mapping[design_states[design.id]]"/>
                                     <td>
                                         <div>
                                             <a t-att-href="'/my/designs/' + str(design.id)" class="btn btn-info">View
@@ -72,7 +72,7 @@
                         </t>
                         <t t-if="not design_requests">
                             <tr class="text-center">
-                                <td colspan="3">No data found</td>
+                                <td colspan="5">No data found</td>
                             </tr>
                         </t>
                     </tbody>
@@ -80,6 +80,7 @@
             </div>
         </t>
     </template>
+
 
     <template id="design_details_template">
         <t t-call="portal.portal_layout">
@@ -91,6 +92,21 @@
                                 <h2 class="mb-0">Design Request Details</h2>
                             </div>
                             <div class="card-body">
+                                <!-- Message handling -->
+                                <t t-if="request.params.get('message')">
+                                    <div class="alert alert-info" role="alert">
+                                        <t t-if="request.params.get('message') == 'invalid_state'">
+                                            You can only accept quotations when the design request is under client
+                                            review.
+                                        </t>
+                                        <t t-if="request.params.get('message') == 'already_confirmed'">
+                                            Your quotation has already been confirmed and converted to a sale order.
+                                        </t>
+                                        <t t-if="request.params.get('message') == 'confirmation_success'">
+                                            Sale Order Confirmed
+                                        </t>
+                                    </div>
+                                </t>
                                 <div class="mb-5">
                                     <div class="col-md-6 mb-2">
                                         <h5>
@@ -104,6 +120,39 @@
                                             <t t-esc="design.customer_email"/>
                                         </h5>
                                     </div>
+                                    <div>
+                                        <h2>Related Sale Orders</h2>
+                                        <t t-if="sale_orders">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Order Name</th>
+                                                        <th>Partner</th>
+                                                        <th>Total Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-foreach="sale_orders" t-as="order">
+                                                        <tr>
+                                                            <td>
+                                                                <t t-esc="order.name"/>
+                                                            </td>
+                                                            <td>
+                                                                <t t-esc="order.partner_id.name"/>
+                                                            </td>
+                                                            <td>
+                                                                <t t-esc="order.amount_total"/>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </t>
+                                        <t t-else="">
+                                            <p>No sale orders found for this design request.</p>
+                                        </t>
+                                    </div>
+
                                 </div>
                                 <div class="container">
                                     <div class="row">
@@ -138,7 +187,9 @@
                                                 </div>
                                             </t>
                                             <t t-else="">
-                                                <p class="text-muted d-inline-flex align-items-center justify-content-center bg-light rounded" style="width: 300px; height: 150px;">No Image</p>
+                                                <p class="text-muted d-inline-flex align-items-center justify-content-center bg-light rounded"
+                                                   style="width: 300px; height: 150px;">No Image
+                                                </p>
                                             </t>
                                         </div>
 
@@ -156,7 +207,9 @@
                                                 </div>
                                             </t>
                                             <t t-else="">
-                                                <p class="text-muted d-inline-flex align-items-center justify-content-center bg-light rounded" style="width: 300px; height: 150px;">No Video Yet</p>
+                                                <p class="text-muted d-inline-flex align-items-center justify-content-center bg-light rounded"
+                                                   style="width: 300px; height: 150px;">No Video Yet
+                                                </p>
                                             </t>
                                         </div>
                                         <div class="col-md-4 mb-4">
@@ -190,15 +243,25 @@
                                                 </div>
                                             </t>
                                             <t t-else="">
-                                                <p class="text-muted d-inline-flex align-items-center justify-content-center bg-light rounded" style="width: 300px; height: 150px;">No Image Yet</p>
+                                                <p class="text-muted d-inline-flex align-items-center justify-content-center bg-light rounded"
+                                                   style="width: 300px; height: 150px;">No Image Yet
+                                                </p>
                                             </t>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="my-3">
-                                    <a href="/my/designs" class="btn btn-primary px-3 d-inline-flex gap-2 align-items-center">
-                                        <i class="fa fa-arrow-left"></i>Back to List</a>
+                                    <a href="/my/designs"
+                                       class="btn btn-primary px-3 d-inline-flex gap-2 align-items-center">
+                                        <i class="fa fa-arrow-left"></i>Back to List
+                                    </a>
                                 </div>
+                                <t t-if="design.state == 'send_for_client_review'">
+                                    <form t-att-action="'/my/designs/%d/accept_quotation' % design.id" method="post">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="btn btn-primary">Accept Quotation</button>
+                                    </form>
+                                </t>
                             </div>
                         </div>
                     </div>
@@ -211,35 +274,43 @@
         <t t-call="portal.portal_layout">
             <div class="container">
                 <h3>Create New Design</h3>
-                <form action="/my/create-design/submit" method="post" enctype="multipart/form-data" class="wrapper col-12 d-flex flex-column gap-3 my-4">
+                <form action="/my/create-design/submit" method="post" enctype="multipart/form-data"
+                      class="wrapper col-12 d-flex flex-column gap-3 my-4">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <input type="hidden" name="customer_id" t-att-value="customer_id"/>
                     <div class="form-group">
                         <label for="design_name">
                             <b>Design Name</b>
                         </label>
-                        <input type="text" id="design_name" name="design_name" class="form-control" placeholder="Design Name" required="required"/>
-                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_name']" t-esc="errors['design_name']"/>
+                        <input type="text" id="design_name" name="design_name" class="form-control"
+                               placeholder="Design Name" required="required"/>
+                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_name']"
+                             t-esc="errors['design_name']"/>
                     </div>
                     <div class="form-group">
                         <label for="customer_email">
                             <b>Customer Email</b>
                         </label>
-                        <input type="email" class="form-control" id="customer_email" name="customer_email" placeholder="Customer Email" required="required" t-att-value="customer_email"/>
-                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['customer_email']" t-esc="errors['customer_email']"/>
+                        <input type="email" class="form-control" id="customer_email" name="customer_email"
+                               placeholder="Customer Email" required="required" t-att-value="customer_email"/>
+                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['customer_email']"
+                             t-esc="errors['customer_email']"/>
                     </div>
                     <div class="form-group">
                         <label for="description">
                             <b>Description (optional)</b>
                         </label>
-                        <textarea type="email" class="form-control" id="description" name="description" placeholder="Description" required="required" t-att-value="description"/>
+                        <textarea type="email" class="form-control" id="description" name="description"
+                                  placeholder="Description" required="required" t-att-value="description"/>
                     </div>
                     <div class="form-group">
                         <label for="design_image">
                             <b>Upload Drawing</b>
                         </label>
-                        <input type="file" class="file" id="design_image" name="design_image" accept=".jpg,.jpeg,.png,.webp" required="required"/>
-                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_image']" t-esc="errors['design_image']"/>
+                        <input type="file" class="file" id="design_image" name="design_image"
+                               accept=".jpg,.jpeg,.png,.webp" required="required"/>
+                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_image']"
+                             t-esc="errors['design_image']"/>
                     </div>
                     <button type="submit" class="btn btn-primary mt-3 me-auto px-3">Submit</button>
                 </form>

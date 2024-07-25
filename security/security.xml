@@ -1,0 +1,9 @@
+<odoo>
+    <data noupdate="1">
+        <!-- Create a security group for the design department -->
+        <record id="group_design_department" model="res.groups">
+            <field name="name">Design Department</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+    </data>
+</odoo>

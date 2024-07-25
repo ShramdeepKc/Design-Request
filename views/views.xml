@@ -20,18 +20,35 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <!--                        <button name="action_start" type="object" string="Start" class="btn btn-primary"-->
-                        <!-- domain="[('state', '=', 'draft')]"/>-->
-                        <button name="action_ready_for_quotation" type="object" string="Ready For Quotation" class="btn btn-secondary"
-                                domain="[('state', '=', 'ready_for_quotation')]"/>
+                        <!-- Button: Ready For Quotation -->
+                        <button name="action_ready_for_quotation" type="object" string="Ready For Quotation"
+                                class="btn btn-secondary"
+                                domain="[('state', '=', 'in_progress')]"
+                                groups="design_request.group_design_department" />
+
+                        <!-- Button: Generate Quotation -->
                         <button name="action_generate_quotation" type="object" string="Generate Quotation"
-                                class="btn btn-primary" domain="[('state', '=', 'generate_quotation')]"/>
+                                class="btn btn-primary"
+                                domain="[('state', '=', 'ready_for_quotation')]"
+                                groups="!design_request.group_design_department"
+                                />
+
+                        <!-- Button: Send For Client Review -->
+                        <button name="action_send_for_client_review" type="object" string="Send For Client Review"
+                                class="btn btn-secondary"
+                                domain="[('state', '=', 'generate_quotation')]"
+                                groups="!design_request.group_design_department"
+                               />
+
+                        <!-- Button: Send Mail -->
+                        <button name="action_send_mail" type="object" string="Send Mail" class="btn btn-secondary"/>
+
+                        <!-- Button: Cancel -->
                         <button name="action_cancel" type="object" string="Cancel" class="btn btn-secondary"
-                                domain="[('state', 'not in', ['ready_for_quotation', 'cancelled'])]"/>
-                        <button name="action_send_mail" type="object" string="Send Mail" class="btn btn-secondary" />
+                                domain="[('state', 'not in', ['cancelled'])]"/>
 
                         <field name="state" widget="statusbar"
-                               statusbar_visible="draft,in_progress,done,ready_for_quotation,cancelled"/>
+                               statusbar_visible="draft,in_progress,ready_for_quotation,generate_quotation,send_for_client_review,cancelled"/>
                     </header>
                     <sheet>
                         <group>
