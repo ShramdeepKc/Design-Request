@@ -62,10 +62,18 @@
                                     <td t-esc="state_mapping[design_states[design.id]]"/>
                                     <td>
                                         <div>
-                                            <a t-att-href="'/my/designs/' + str(design.id)" class="btn btn-info">View
-                                                Details
-                                                <t t-if="design.state == 'send_for_client_review'"> And Quotations</t>
+                                            <!-- View Details Button -->
+                                            <a t-att-href="'/my/designs/' + str(design.id)" class="btn btn-info">
+                                                View Details
                                             </a>
+
+                                            <!-- Conditionally Render View Quotations Button -->
+                                            <t t-if="design.state == 'send_for_client_review'">
+                                                <a t-att-href="'/my/designs/' + str(design.id) + '/quotations'"
+                                                   class="btn btn-primary">
+                                                    View Quotations
+                                                </a>
+                                            </t>
                                         </div>
                                     </td>
                                 </tr>
@@ -120,38 +128,6 @@
                                             <strong>Customer Email:</strong>
                                             <t t-esc="design.customer_email"/>
                                         </h5>
-                                    </div>
-                                    <div>
-                                        <h2>Related Sale Orders</h2>
-                                        <t t-if="sale_orders">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Order Name</th>
-                                                        <th>Partner</th>
-                                                        <th>Total Amount</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <t t-foreach="sale_orders" t-as="order">
-                                                        <tr>
-                                                            <td>
-                                                                <t t-esc="order.name"/>
-                                                            </td>
-                                                            <td>
-                                                                <t t-esc="order.partner_id.name"/>
-                                                            </td>
-                                                            <td>
-                                                                <t t-esc="order.amount_total"/>
-                                                            </td>
-                                                        </tr>
-                                                    </t>
-                                                </tbody>
-                                            </table>
-                                        </t>
-                                        <t t-else="">
-                                            <p>No sale orders found for this design request.</p>
-                                        </t>
                                     </div>
 
                                 </div>
@@ -271,6 +247,7 @@
         </t>
     </template>
 
+
     <template id="create_design_template" name="Create Design">
         <t t-call="portal.portal_layout">
             <div class="container">
@@ -318,4 +295,80 @@
             </div>
         </t>
     </template>
+    <template id="view_quotations_template" name="View Quotations">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5">
+                <h3>Quotations for Design Request
+                    <t t-esc="design.design_name"/>
+                </h3>
+
+                <div class="card-body">
+                                <!-- Message handling -->
+                                <t t-if="request.params.get('message')">
+                                    <div class="alert alert-info" role="alert">
+                                        <t t-if="request.params.get('message') == 'invalid_state'">
+                                            You can only accept quotations when the design request is under client
+                                            review.
+                                        </t>
+                                        <t t-if="request.params.get('message') == 'already_confirmed'">
+                                            Your quotation has already been confirmed and converted to a sale order.
+                                        </t>
+                                        <t t-if="request.params.get('message') == 'confirmation_success'">
+                                            Sale Order Confirmed
+                                        </t>
+                                    </div>
+                                </t>
+                </div>
+
+                <div>
+                    <h2>Related Sale Orders</h2>
+                    <t t-if="sale_orders">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Order Name</th>
+                                    <th>Partner</th>
+                                    <th>Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="sale_orders" t-as="order">
+                                    <tr>
+                                        <td>
+                                            <t t-esc="order.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="order.partner_id.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="order.amount_total"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+                    <t t-else="">
+                        <p>No sale orders found for this design request.</p>
+                    </t>
+                </div>
+                <div class="my-3">
+                    <t t-if="design.state == 'send_for_client_review'">
+                        <form t-att-action="'/my/designs/%d/accept_quotation' % design.id" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button type="submit" class="btn btn-primary">Accept Quotation</button>
+                        </form>
+                    </t>
+                </div>
+
+                <div class="my-3">
+                    <a href="/my/designs" class="btn btn-primary">
+                        Back to Design Requests
+                    </a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+
 </odoo>
