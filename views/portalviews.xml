@@ -64,6 +64,7 @@
                                         <div>
                                             <a t-att-href="'/my/designs/' + str(design.id)" class="btn btn-info">View
                                                 Details
+                                                <t t-if="design.state == 'send_for_client_review'"> And Quotations</t>
                                             </a>
                                         </div>
                                     </td>

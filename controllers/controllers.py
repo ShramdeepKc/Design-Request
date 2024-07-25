@@ -98,12 +98,6 @@ class CustomerPortalHome(CustomerPortal):
         values = {'page_name': 'create_design', 'errors': errors}
         return request.render("design_request.create_design_template", values)
 
-    from odoo import http
-    from odoo.http import request
-    import logging
-
-    _logger = logging.getLogger(__name__)
-
     @http.route('/my/designs/<model("design_request.design_request"):design>/', type='http', auth='user',
                 website=True)
     def design_details(self, design, **kw):
