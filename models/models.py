@@ -115,6 +115,22 @@ class design_request(models.Model):
         for record in self:
             if record.state != 'generate_quotation':
                 raise UserError("Cannot send for client review until a quotation is generated.")
+                
+            # TODO: Send emails asynchronously
+
+            # Post a message to each member of the design team
+            subject = "Design Review"
+            body = f"Dear Client,<br/><br/>This is to notify that the design request (<b>{record.design_name}</b>) is ready for review.<br/><br/>Best regards,<br/>Nova Design Team"
+            
+            email_values = {
+                'subject': subject,
+                'body_html': body,
+                'email_to': record.customer_email,  # Assuming each member has a work_email field
+            }
+            mail = record.env['mail.mail'].create(email_values)
+            # Send the email
+            mail.send()
+
             record.state = 'send_for_client_review'
 
     def action_cancel(self):
