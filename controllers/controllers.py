@@ -162,12 +162,34 @@ class CustomerPortalHome(CustomerPortal):
         confirmed_orders = sale_orders.filtered(lambda order: order.state in ['sale', 'done'])
 
         if confirmed_orders:
-            return request.redirect('/my/designs/%d/?message=already_confirmed' % design.id)
+            return request.redirect('/my/designs/%d/quotations?message=already_confirmed' % design.id)
 
         # Confirm draft sale orders
         draft_orders = sale_orders.filtered(lambda order: order.state == 'draft')
         for order in draft_orders:
             order.action_confirm()  # Confirm the sale order, changing its state to 'sale'
 
-        # Redirect back to the design details page with success message
-        return request.redirect('/my/designs/%d/?message=confirmation_success' % design.id)
+        # Redirect back to the design quotations page with success message
+        return request.redirect('/my/designs/%d/quotations?message=confirmation_success' % design.id)
+
+    @http.route('/my/designs/<model("design_request.design_request"):design>/quotations', type='http', auth='user',
+                website=True)
+    def view_quotations(self, design, **kw):
+        if not design.exists():
+            return request.not_found()  # Return 404 if design does not exist
+
+        # Ensure the design state is 'send_for_client_review' before fetching related sale orders
+        sale_orders = []
+        if design.state == 'send_for_client_review':
+            # Fetch the related sale orders for the design request
+            sale_orders = request.env['sale.order'].sudo().search([
+                ('design_request_id', '=', design.id),
+                ('state', 'in', ['draft', 'sale'])  # Adjust the states as needed
+            ])
+
+            # Print or log the sale orders
+            _logger.info("Sale Orders for Design Request ID %s: %s", design.id, sale_orders)
+            print("Sale Orders for Design Request ID {}: {}".format(design.id, sale_orders))
+
+        values = {'page_name': 'design_details', 'design': design, 'sale_orders': sale_orders}
+        return request.render('design_request.view_quotations_template', values)
