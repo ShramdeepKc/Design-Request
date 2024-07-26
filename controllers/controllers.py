@@ -89,20 +89,32 @@ class CustomerPortalHome(CustomerPortal):
                     'description': description,
                     'design_image': encoded_image,
                 })
+
+                # TODO: Send emails asynchronously
+                design_team = request.env['hr.employee'].sudo().search([('department_id.name', '=', 'Designing Team')])
+
+                # Post a message to each member of the design team
+                subject = "New Design Request Notification"
+                body = f"Dear {{}},<br/><br/>We have received a new design request: <b>{design_name}</b>.<br/><br/>Best regards,<br/>Nova Design Team"
+                for member in design_team:
+                    email_values = {
+                        'subject': subject,
+                        'body_html': body.format(member.name),
+                        'email_to': member.work_email,  # Assuming each member has a work_email field
+                    }
+                    mail = request.env['mail.mail'].create(email_values)
+                    # Send the email
+                    mail.send()
+
                 return request.redirect('/my/designs')
             except UnidentifiedImageError as e:
                 errors["design_image"] = "Invalid image type"
             except Exception as e:
-                errors["design_image"] = f"Error processing design image: {e}"
+                errors["design_image"] = f"Error : {e}"
 
         values = {'page_name': 'create_design', 'errors': errors}
         return request.render("design_request.create_design_template", values)
 
-    from odoo import http
-    from odoo.http import request
-    import logging
-
-    _logger = logging.getLogger(__name__)
 
     @http.route('/my/designs/<model("design_request.design_request"):design>/', type='http', auth='user',
                 website=True)
