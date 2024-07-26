@@ -128,7 +128,7 @@
                                             <strong>Customer Email:</strong>
                                             <t t-esc="design.customer_email"/>
                                         </h5>
-                                    </div>q
+                                    </div>
 
                                 </div>
                                 <div class="container">
