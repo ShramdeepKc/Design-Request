@@ -222,6 +222,11 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="mt-5">
+                                    <t t-call="portal.message_thread">
+                                        <t t-set="object" t-value="design"/>
+                                    </t>
+                                </div>
                                 <div class="my-3">
                                     <a href="/my/designs"
                                        class="btn btn-primary px-3 d-inline-flex gap-2 align-items-center">
@@ -298,21 +303,24 @@
                 </h3>
 
                 <div class="card-body">
-                                <!-- Message handling -->
-                                <t t-if="request.params.get('message')">
-                                    <div class="alert alert-info" role="alert">
-                                        <t t-if="request.params.get('message') == 'invalid_state'">
-                                            You can only accept quotations when the design request is under client
-                                            review.
-                                        </t>
-                                        <t t-if="request.params.get('message') == 'already_confirmed'">
-                                            Your quotation has already been confirmed and converted to a sale order.
-                                        </t>
-                                        <t t-if="request.params.get('message') == 'confirmation_success'">
-                                            Sale Order Confirmed
-                                        </t>
-                                    </div>
-                                </t>
+                    <!-- Message handling -->
+                    <t t-if="request.params.get('message')">
+                        <div class="alert alert-info" role="alert">
+                            <t t-if="request.params.get('message') == 'invalid_state'">
+                                You can only accept quotations when the design request is under client
+                                review.
+                            </t>
+                            <t t-if="request.params.get('message') == 'already_confirmed'">
+                                Your quotation has already been confirmed and converted to a sale order.
+                            </t>
+                            <t t-if="request.params.get('message') == 'confirmation_success'">
+                                Sale Order Confirmed
+                            </t>
+                            <t t-if="request.params.get('message') == 'rejection_success'">
+                                Quotation Rejected.
+                            </t>
+                        </div>
+                    </t>
                 </div>
 
                 <div>
@@ -352,6 +360,10 @@
                         <form t-att-action="'/my/designs/%d/accept_quotation' % design.id" method="post">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                             <button type="submit" class="btn btn-primary">Accept Quotation</button>
+                        </form>
+                        <form t-att-action="'/my/designs/%d/reject_quotation' % design.id" method="post" class="mt-2">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button type="submit" class="btn btn-danger">Reject Quotation</button>
                         </form>
                     </t>
                 </div>
