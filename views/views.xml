@@ -1,6 +1,5 @@
 <odoo>
     <data>
-
         <!-- Tree View -->
         <record model="ir.ui.view" id="design_request_list_view">
             <field name="name">Design Request List</field>
@@ -23,26 +22,23 @@
                         <!-- Button: Ready For Quotation -->
                         <button name="action_ready_for_quotation" type="object" string="Ready For Quotation"
                                 class="btn btn-secondary"
-                                domain="[('state', '=', 'in_progress')]"
-                                groups="design_request.group_design_department" 
+                                groups="design_request.group_design_department"
                                 invisible="state != 'in_progress'"
-                                />
+                        />
 
                         <!-- Button: Generate Quotation -->
                         <button name="action_generate_quotation" type="object" string="Generate Quotation"
                                 class="btn btn-primary"
-                                domain="[('state', '=', 'ready_for_quotation')]"
                                 groups="!design_request.group_design_department"
                                 invisible="state != 'ready_for_quotation'"
-                                />
+                        />
 
                         <!-- Button: Send For Client Review -->
                         <button name="action_send_for_client_review" type="object" string="Send For Client Review"
                                 class="btn btn-secondary"
-                                domain="[('state', '=', 'generate_quotation')]"
                                 groups="!design_request.group_design_department"
                                 invisible="state != 'generate_quotation'"
-                               />
+                        />
 
                         <!-- Button: Send Mail -->
                         <button name="action_send_mail" type="object" string="Send Mail" class="btn btn-secondary"/>
@@ -51,7 +47,7 @@
                         <button name="action_cancel" type="object" string="Cancel" class="btn btn-secondary"
                                 domain="[('state', 'not in', ['cancelled'])]"/>
 
-                        <field name="state" widget="statusbar" />
+                        <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
                         <group>
@@ -66,15 +62,24 @@
                             <field name="video_filename" class="oe_inline oe_invisible_modifier col-md-6"/>
                             <field name="completed_design" class="oe_inline oe_invisible_modifier col-md-6"/>
                         </group>
-
-
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids"/>
                         <field name="message_ids"/>
                     </div>
-
                 </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record model="ir.ui.view" id="design_request_search_view">
+            <field name="name">Design Request Search</field>
+            <field name="model">design_request.design_request</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="design_name"/>
+                    <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+                </search>
             </field>
         </record>
 
@@ -84,6 +89,7 @@
             <field name="res_model">design_request.design_request</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="design_request_list_view"/>
+            <field name="search_view_id" ref="design_request_search_view"/>
         </record>
 
         <!-- Top Menu Item -->
@@ -95,6 +101,5 @@
         <!-- Actions -->
         <menuitem name="List" id="design_request_menu_list_action" parent="design_request_menu_list"
                   action="design_request_action_window"/>
-
     </data>
 </odoo>
