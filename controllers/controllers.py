@@ -63,7 +63,7 @@ class CustomerPortalHome(CustomerPortal):
         user = request.env.user
         values = {
             "page_name": "create_design",
-            "customer_email": user.email or "",
+            "customer_email": "",
             "customer_id": user.id,
             "errors": {"design_name": "", "customer_email": "", "design_image": ""},
         }
