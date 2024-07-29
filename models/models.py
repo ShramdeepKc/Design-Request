@@ -31,6 +31,7 @@ class design_request(models.Model):
             ("ready_for_quotation", "Ready for Quotation"),
             ("generate_quotation", "Generate Quotation"),
             ("send_for_client_review", "Client Review"),
+            ("completed", "Completed"),
             ("cancelled", "Cancelled"),
         ],
         default="draft",

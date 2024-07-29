@@ -24,13 +24,16 @@
                         <button name="action_ready_for_quotation" type="object" string="Ready For Quotation"
                                 class="btn btn-secondary"
                                 domain="[('state', '=', 'in_progress')]"
-                                groups="design_request.group_design_department" />
+                                groups="design_request.group_design_department" 
+                                invisible="state != 'in_progress'"
+                                />
 
                         <!-- Button: Generate Quotation -->
                         <button name="action_generate_quotation" type="object" string="Generate Quotation"
                                 class="btn btn-primary"
                                 domain="[('state', '=', 'ready_for_quotation')]"
                                 groups="!design_request.group_design_department"
+                                invisible="state != 'ready_for_quotation'"
                                 />
 
                         <!-- Button: Send For Client Review -->
@@ -38,6 +41,7 @@
                                 class="btn btn-secondary"
                                 domain="[('state', '=', 'generate_quotation')]"
                                 groups="!design_request.group_design_department"
+                                invisible="state != 'generate_quotation'"
                                />
 
                         <!-- Button: Send Mail -->
@@ -47,8 +51,7 @@
                         <button name="action_cancel" type="object" string="Cancel" class="btn btn-secondary"
                                 domain="[('state', 'not in', ['cancelled'])]"/>
 
-                        <field name="state" widget="statusbar"
-                               statusbar_visible="draft,in_progress,ready_for_quotation,generate_quotation,send_for_client_review,cancelled"/>
+                        <field name="state" widget="statusbar" />
                     </header>
                     <sheet>
                         <group>

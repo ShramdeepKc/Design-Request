@@ -290,6 +290,9 @@ class CustomerPortalHome(CustomerPortal):
         for order in draft_orders:
             order.action_confirm()  # Confirm the sale order, changing its state to 'sale'
 
+        # Set the design state to 'completed'
+        design.state = "completed"
+
         # Redirect back to the design quotations page with success message
         return request.redirect(
             "/my/designs/%d/quotations?message=confirmation_success" % design.id

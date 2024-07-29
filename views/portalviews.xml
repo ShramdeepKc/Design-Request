@@ -68,7 +68,7 @@
                                             </a>
 
                                             <!-- Conditionally Render View Quotations Button -->
-                                            <t t-if="design.state == 'send_for_client_review'">
+                                            <t t-if="design.state == 'send_for_client_review' or design.state == 'completed'">
                                                 <a t-att-href="'/my/designs/' + str(design.id) + '/quotations'"
                                                    class="btn btn-primary">
                                                     View Quotations
@@ -353,6 +353,9 @@
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                             <button type="submit" class="btn btn-primary">Accept Quotation</button>
                         </form>
+                    </t>
+                    <t t-if="design.state == 'completed'">
+                        <button class="btn btn-primary">Quotation Accepted</button>
                     </t>
                 </div>
 
