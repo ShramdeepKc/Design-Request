@@ -222,11 +222,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="mt-5">
-                                    <t t-call="portal.message_thread">
-                                        <t t-set="object" t-value="design"/>
-                                    </t>
-                                </div>
                                 <div class="my-3">
                                     <a href="/my/designs"
                                        class="btn btn-primary px-3 d-inline-flex gap-2 align-items-center">
@@ -240,6 +235,11 @@
                                     </form>
                                 </t>
                             </div>
+                        </div>
+                        <div class="mt-5">
+                            <t t-call="portal.message_thread">
+                                <t t-set="object" t-value="design"/>
+                            </t>
                         </div>
                     </div>
                 </div>

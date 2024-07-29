@@ -310,7 +310,7 @@ class CustomerPortalHome(CustomerPortal):
 
         # Ensure the design state is 'send_for_client_review' before fetching related sale orders
         sale_orders = []
-        if design.state == "send_for_client_review":
+        if design.state == "send_for_client_review" or design.state == "completed":
             # Fetch the related sale orders for the design request
             sale_orders = (
                 request.env["sale.order"]
