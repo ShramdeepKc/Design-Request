@@ -94,9 +94,9 @@ class CustomerPortalHome(CustomerPortal):
             errors["design_image"] = "Please upload a design image"
 
         if (
-            errors["design_name"] == ""
-            and errors["customer_email"] == ""
-            and errors["design_image"] == ""
+                errors["design_name"] == ""
+                and errors["customer_email"] == ""
+                and errors["design_image"] == ""
         ):
             try:
                 allowed_extensions = ["jpg", "jpeg", "png", "webp"]
@@ -343,3 +343,27 @@ class CustomerPortalHome(CustomerPortal):
             "sale_orders": sale_orders,
         }
         return request.render("design_request.view_quotations_template", values)
+
+    @http.route(
+        "/my/designs/<int:design_id>/reject_quotation",
+        type="http",
+        auth="user",
+        website=True,
+        methods=["POST"],
+    )
+    def reject_quotation(self, design_id, **kw):
+        # Fetch the design request
+        design = request.env["design_request.design_request"].sudo().browse(design_id)
+
+        if not design.exists():
+            return request.not_found()  # Return 404 if design does not exist
+
+        # Ensure the design state is 'send_for_client_review' before processing
+        if design.state != "send_for_client_review":
+            return request.redirect("/my/designs/%d/?message=invalid_state" % design.id)
+
+        # Update the state to 'in_progress'
+        design.write({'state': 'in_progress'})
+
+        # Redirect back to the design quotations page with success message
+        return request.redirect("/my/designs/%d/quotations?message=rejection_success" % design.id)
