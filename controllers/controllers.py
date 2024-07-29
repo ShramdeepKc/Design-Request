@@ -298,6 +298,7 @@ class CustomerPortalHome(CustomerPortal):
             "/my/designs/%d/quotations?message=confirmation_success" % design.id
         )
 
+
     @http.route(
         '/my/designs/<model("design_request.design_request"):design>/quotations',
         type="http",
