@@ -85,26 +85,39 @@ class CustomerPortalHome(CustomerPortal):
         customer_id = kw.get("customer_id")
         customer_email = kw.get("customer_email")
         description = kw.get("description")
-        design_image = request.httprequest.files.get("design_image")
+        design_image = request.httprequest.files.getlist("design_image")
+
         if not design_name:
             errors["design_name"] = "Please enter design name"
         if not customer_email:
             errors["customer_email"] = "Please enter customer email"
         if not design_image:
-            errors["design_image"] = "Please upload a design image"
+            errors["design_image"] = "Please upload at least one design image"
 
         if (
-                errors["design_name"] == ""
-                and errors["customer_email"] == ""
-                and errors["design_image"] == ""
+            errors["design_name"] == ""
+            and errors["customer_email"] == ""
+            and errors["design_image"] == ""
         ):
             try:
                 allowed_extensions = ["jpg", "jpeg", "png", "webp"]
-                file_extension = design_image.filename.split(".")[-1].lower()
-                if file_extension not in allowed_extensions:
-                    raise UnidentifiedImageError("Invalid image type")
+                image_ids = []
+                for image in design_image:
+                    file_extension = image.filename.split(".")[-1].lower()
+                    if file_extension not in allowed_extensions:
+                        raise UnidentifiedImageError("Invalid image type")
+                    encoded_image = base64.b64encode(image.read())
+                    attachment = request.env["ir.attachment"].sudo().create(
+                        {
+                            "name": image.filename,
+                            "datas": encoded_image,
+                            "res_model": "design_request.design_request",
+                            "res_id": 0,
+                            "mimetype": image.content_type,
+                        }
+                    )
+                    image_ids.append(attachment.id)
 
-                encoded_image = base64.b64encode(design_image.read())
                 request.env["design_request.design_request"].sudo().create(
                     {
                         "design_name": design_name,
@@ -112,7 +125,7 @@ class CustomerPortalHome(CustomerPortal):
                         "customer_email": customer_email,
                         "client_email": request.env.user.email,
                         "description": description,
-                        "design_image": encoded_image,
+                        "design_image": [(6, 0, image_ids)],
                     }
                 )
 
@@ -156,39 +169,20 @@ class CustomerPortalHome(CustomerPortal):
         if not design.exists():
             return request.not_found()  # Return 404 if design does not exist
 
-        # Ensure the design state is 'send_for_client_review' before fetching related sale orders
-        sale_orders = []
-        if design.state == "send_for_client_review":
-            # Fetch the related sale orders for the design request
-            sale_orders = (
-                request.env["sale.order"]
-                .sudo()
-                .search(
-                    [
-                        ("design_request_id", "=", design.id),
-                        (
-                            "state",
-                            "in",
-                            ["draft", "sale"],
-                        ),  # Adjust the states as needed
-                    ]
-                )
-            )
-
-            # Print or log the sale orders
-            _logger.info(
-                "Sale Orders for Design Request ID %s: %s", design.id, sale_orders
-            )
-            print(
-                "Sale Orders for Design Request ID {}: {}".format(
-                    design.id, sale_orders
-                )
-            )
-
+        # Decode the images
+        images = []
+        for attachment in design.design_image:
+            try:
+                image_data = attachment.datas
+                images.append({'id': attachment.id, 'data': image_data})
+            except Exception as e:
+                _logger.error(f"Error reading image {attachment.id}: {e}")
+        print(f"Images: {images}")
+        print(f"Images: {design.design_image}")
         values = {
             "page_name": "design_details",
             "design": design,
-            "sale_orders": sale_orders,
+            "images": images,
         }
         # Pass the specific design request to the template
         return request.render("design_request.design_details_template", values)

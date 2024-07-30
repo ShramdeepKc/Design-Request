@@ -14,7 +14,7 @@ class design_request(models.Model):
     customer_email = fields.Char(string="Customer Email")
     client_email = fields.Char(string="Client Email")
     description = fields.Text(string="Description")
-    design_image = fields.Image(string="Design Image", attachment=True)
+    design_image = fields.Many2many('ir.attachment', string="Design Image")
     price_unit = fields.Float(string="Price")
     assigned_employees = fields.Many2one(
         "hr.employee",
