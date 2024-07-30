@@ -57,8 +57,7 @@
                         <group>
                             <field name="design_name" class="oe_inline oe_invisible_modifier col-md-10"/>
                             <field name="customer_email" class="oe_inline oe_invisible_modifier col-md-10"/>
-                            <field name="design_image" widget="image" class="oe_inline oe_invisible_modifier col-md-6"
-                                   options="{'size': [200, 200]}"/>
+                            <field name="design_image" widget="many2many_binary"/>
                             <field name="price_unit" class="oe_inline col-md-6"/>
                             <field name="assigned_employees" class="oe_inline oe_invisible_modifier col-md-6"
                                    domain="[('department_id.name', '=', 'Designing Team')]"/>
