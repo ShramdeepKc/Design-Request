@@ -7,6 +7,7 @@ from odoo.http import request
 from PIL import UnidentifiedImageError
 import base64
 import logging
+import re
 
 # Set up the logger
 _logger = logging.getLogger(__name__)
@@ -89,8 +90,8 @@ class CustomerPortalHome(CustomerPortal):
 
         if not design_name:
             errors["design_name"] = "Please enter design name"
-        if not customer_email:
-            errors["customer_email"] = "Please enter customer email"
+        if customer_email and not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", customer_email):
+            errors["customer_email"] = "Please enter a valid email address"
         if not design_image:
             errors["design_image"] = "Please upload at least one design image"
 
@@ -113,6 +114,7 @@ class CustomerPortalHome(CustomerPortal):
                             "datas": encoded_image,
                             "res_model": "design_request.design_request",
                             "res_id": 0,
+                            'public': True,
                             "mimetype": image.content_type,
                         }
                     )
@@ -177,8 +179,6 @@ class CustomerPortalHome(CustomerPortal):
                 images.append({'id': attachment.id, 'data': image_data})
             except Exception as e:
                 _logger.error(f"Error reading image {attachment.id}: {e}")
-        print(f"Images: {images}")
-        print(f"Images: {design.design_image}")
         values = {
             "page_name": "design_details",
             "design": design,
@@ -202,6 +202,9 @@ class CustomerPortalHome(CustomerPortal):
         if design.state != "send_for_client_review":
             return request.redirect("/my/designs/%d/?message=invalid_state" % design.id)
 
+        if not design.customer_email:
+            return request.redirect("/my/designs/%d/?message=no_user" % design.id)
+        
         try:
             # Prepare the email content
             subject = "New Design Request Notification"

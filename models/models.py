@@ -194,3 +194,4 @@ class design_request(models.Model):
                     )
             else:
                 _logger.warning("No customer email provided for record %s", record.id)
+    
