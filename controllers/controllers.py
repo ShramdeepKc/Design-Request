@@ -22,13 +22,13 @@ class CustomerPortalHome(CustomerPortal):
         )
 
         state_mapping = {
-            "draft": "Draft",
+            "draft": "Pending",
             "in_progress": "In Progress",
-            "done": "Done",
-            "generate_quotation": "Quotation Generated",
-            "ready_for_quotation": "Ready for Quotation",
+            "ready_for_quotation": "In Progress",
+            "generate_quotation": "In Progress",
             "send_for_client_review": "Quotation Review",
             "cancelled": "Cancelled",
+            "completed": "Completed",
             "sale": "Sale Order Confirmed",
         }
 
