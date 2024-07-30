@@ -57,7 +57,8 @@
                             <t t-foreach="design_requests" t-as="design">
                                 <tr>
                                     <td t-esc="design.design_name"/>
-                                    <td t-esc="design.customer_email"/>
+                                    <td t-if="design.customer_email" t-esc="design.customer_email"/>
+                                    <td t-if="not design.customer_email" t-esc="'None'"/>
                                     <td t-esc="design.create_date.strftime('%Y-%m-%d')"/>
                                     <td t-esc="state_mapping[design_states[design.id]]"/>
                                     <td>
@@ -109,6 +110,9 @@
                                         <t t-if="request.params.get('message') == 'email_error'">
                                             Failed to send email.
                                         </t>
+                                        <t t-if="request.params.get('message') == 'no_user'">
+                                            No customer email provided.
+                                        </t>
                                     </div>
                                 </t>
                                 <div class="mb-5">
@@ -121,7 +125,12 @@
                                     <div class="col-md-6 mb-2">
                                         <h5>
                                             <strong>Customer Email:</strong>
-                                            <t t-esc="design.customer_email"/>
+                                            <t t-if="design.customer_email">
+                                                <t t-esc="design.customer_email"/>
+                                            </t>
+                                            <t t-if="not design.customer_email">
+                                                None
+                                            </t>
                                         </h5>
                                     </div>
                                 </div>
@@ -226,7 +235,7 @@
                                         <i class="fa fa-arrow-left"></i>Back to List
                                     </a>
                                 </div>
-                                <t t-if="design.state == 'send_for_client_review'">
+                                <t t-if="design.state == 'send_for_client_review' and design.customer_email">
                                     <form t-att-action="'/my/designs/%d/send-to-customer' % design.id" method="post">
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                         <button type="submit" class="btn btn-primary">Send to Customer</button>
@@ -264,10 +273,10 @@
                     </div>
                     <div class="form-group">
                         <label for="customer_email">
-                            <b>Customer Email</b>
+                            <b>Customer Email (optional)</b>
                         </label>
                         <input type="email" class="form-control" id="customer_email" name="customer_email"
-                               placeholder="Customer Email" required="required" t-att-value="customer_email"/>
+                               placeholder="Customer Email" t-att-value="customer_email"/>
                         <div class="alert alert-danger mt-2" role="alert" t-if="errors['customer_email']"
                              t-esc="errors['customer_email']"/>
                     </div>
