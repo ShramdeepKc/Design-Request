@@ -291,24 +291,52 @@
                 </div>
 
                 <!-- Jewelry Type and Values Dropdown -->
-                <div class="form-group">
-                    <label><b>Select Jewelry Type and Attributes</b></label>
-                    <div class="row">
-                        <t t-foreach="jewelry_types" t-as="type">
-                            <div class="col-md-6">
-                                <label><t t-esc="type.type_category"/></label>
-                                <select class="form-control" t-att-name="'jewelry_type_' + str(type.id)">
-                                    <option value="">Select <t t-esc="type.type_category"/></option>
-                                    <t t-foreach="jewelry_type_values[type.id]" t-as="value">
-                                        <option t-att-value="value.id">
-                                            <t t-esc="value.name"/>
-                                        </option>
-                                    </t>
-                                </select>
-                            </div>
+<!--                <div class="form-group">-->
+<!--                    <label><b>Select Jewelry Type and Attributes</b></label>-->
+<!--                    <div class="row">-->
+<!--                        <t t-foreach="jewelry_types" t-as="type">-->
+<!--                            <div class="col-md-6">-->
+<!--                                <label><t t-esc="type.type_category"/></label>-->
+<!--                                <select class="form-control" t-att-name="'jewelry_type_' + str(type.id)">-->
+<!--                                    <option value="">Select <t t-esc="type.type_category"/></option>-->
+<!--                                    <t t-foreach="jewelry_type_values[type.id]" t-as="value">-->
+<!--                                        <option t-att-value="value.id">-->
+<!--                                            <t t-esc="value.name"/>-->
+<!--                                        </option>-->
+<!--                                    </t>-->
+<!--                                </select>-->
+<!--                            </div>-->
+<!--                        </t>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+               <div class="form-group mb-3">
+                    <label for="metal_type" class="form-label">Metal Type</label>
+                    <select id="metal_type" name="metal_type_id" class="form-control">
+                        <t t-foreach="metal_types" t-as="metal_type">
+                            <option t-att-value="metal_type.id"><t t-esc="metal_type.name"/></option>
                         </t>
-                    </div>
+                    </select>
                 </div>
+
+                <div class="form-group mb-3">
+                    <label for="ring_type" class="form-label">Ring Type</label>
+                    <select id="ring_type" name="ring_type_id" class="form-control">
+                        <t t-foreach="ring_types" t-as="ring_type">
+                            <option t-att-value="ring_type.id"><t t-esc="ring_type.name"/></option>
+                        </t>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="shank_setting_style" class="form-label">Shank Setting Style</label>
+                    <select id="shank_setting_style" name="shank_setting_style_id" class="form-control">
+                        <t t-foreach="shank_styles" t-as="shank_style">
+                            <option t-att-value="shank_style.id"><t t-esc="shank_style.name"/></option>
+                        </t>
+                    </select>
+                </div>
+
 
                 <!-- Design Image Upload -->
                 <div class="form-group">

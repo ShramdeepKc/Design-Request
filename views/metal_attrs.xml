@@ -1,80 +1,111 @@
 <odoo>
-    <!-- Data for JewelryType categories -->
-    <data noupdate="1">
-        <record id="jewelry_type_metal_type" model="jewelry_type">
-            <field name="type_category">metal_type</field>
-        </record>
-        <record id="jewelry_type_ring_type" model="jewelry_type">
-            <field name="type_category">ring_type</field>
-        </record>
-        <record id="jewelry_type_shank_type" model="jewelry_type">
-            <field name="type_category">shank_type</field>
-        </record>
-        <record id="jewelry_type_center_setting" model="jewelry_type">
-            <field name="type_category">center_setting</field>
-        </record>
-        <record id="jewelry_type_ear_ring_type" model="jewelry_type">
-            <field name="type_category">ear_ring_type</field>
-        </record>
-        <record id="jewelry_type_chain_type" model="jewelry_type">
-            <field name="type_category">chain_type</field>
-        </record>
-        <record id="jewelry_type_bracelet_type" model="jewelry_type">
-            <field name="type_category">bracelet_type</field>
-        </record>
-        <record id="jewelry_type_center_stone_type" model="jewelry_type">
-            <field name="type_category">center_stone_type</field>
-        </record>
-        <record id="jewelry_type_shape" model="jewelry_type">
-            <field name="type_category">shape</field>
-        </record>
-        <record id="jewelry_type_clarity" model="jewelry_type">
-            <field name="type_category">clarity</field>
-        </record>
-        <record id="jewelry_type_color" model="jewelry_type">
-            <field name="type_category">color</field>
-        </record>
-    </data>
-
-    <!-- Tree View for Jewelry Types -->
-    <record id="view_jewelry_type_tree" model="ir.ui.view">
-        <field name="name">jewelry_type_tree</field>
-        <field name="model">jewelry_type</field>
-        <field name="arch" type="xml">
-            <tree string="Jewelry Types" create="false">
-                <field name="type_category"/>
-            </tree>
-        </field>
+    <record id="view_design_dropdown_option_form" model="ir.ui.view">
+    <field name="name">design.dropdown.option.form</field>
+    <field name="model">dropdown_option</field>
+    <field name="arch" type="xml">
+        <form string="Design Dropdown Option">
+            <sheet>
+                <group>
+                    <field name="name"/>
+                    <field name="option_type"/>
+                </group>
+            </sheet>
+        </form>
+    </field>
     </record>
 
-    <!-- Form View for Jewelry Types -->
-    <record id="view_jewelry_type_form" model="ir.ui.view">
-        <field name="name">jewelry_type_form</field>
-        <field name="model">jewelry_type</field>
-        <field name="arch" type="xml">
-            <form string="Jewelry Type">
-                <sheet>
-                    <group>
-                        <field name="type_category" readonly="1"/>
-                    </group>
-                    <notebook>
-                        <page string="Attribute Values">
-                            <field name="attr_value_ids">
-                                <tree editable="bottom">
-                                    <field name="name"/>
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
-        </field>
+    <record id="view_design_dropdown_option_tree" model="ir.ui.view">
+    <field name="name">design.dropdown.option.tree</field>
+    <field name="model">dropdown_option</field>
+    <field name="arch" type="xml">
+        <tree string="Design Dropdown Option">
+            <field name="name"/>
+            <field name="option_type"/>
+        </tree>
+    </field>
     </record>
+
+
+
+
+
+
+<!--    &lt;!&ndash; Data for JewelryType categories &ndash;&gt;-->
+<!--    <data noupdate="1">-->
+<!--        <record id="jewelry_type_metal_type" model="jewelry_type">-->
+<!--            <field name="type_category">metal_type</field>-->
+<!--        </record>-->
+<!--        <record id="jewelry_type_ring_type" model="jewelry_type">-->
+<!--            <field name="type_category">ring_type</field>-->
+<!--        </record>-->
+<!--        <record id="jewelry_type_shank_type" model="jewelry_type">-->
+<!--            <field name="type_category">shank_type</field>-->
+<!--        </record>-->
+<!--        <record id="jewelry_type_center_setting" model="jewelry_type">-->
+<!--            <field name="type_category">center_setting</field>-->
+<!--        </record>-->
+<!--        <record id="jewelry_type_ear_ring_type" model="jewelry_type">-->
+<!--            <field name="type_category">ear_ring_type</field>-->
+<!--        </record>-->
+<!--        <record id="jewelry_type_chain_type" model="jewelry_type">-->
+<!--            <field name="type_category">chain_type</field>-->
+<!--        </record>-->
+<!--        <record id="jewelry_type_bracelet_type" model="jewelry_type">-->
+<!--            <field name="type_category">bracelet_type</field>-->
+<!--        </record>-->
+<!--        <record id="jewelry_type_center_stone_type" model="jewelry_type">-->
+<!--            <field name="type_category">center_stone_type</field>-->
+<!--        </record>-->
+<!--        <record id="jewelry_type_shape" model="jewelry_type">-->
+<!--            <field name="type_category">shape</field>-->
+<!--        </record>-->
+<!--        <record id="jewelry_type_clarity" model="jewelry_type">-->
+<!--            <field name="type_category">clarity</field>-->
+<!--        </record>-->
+<!--        <record id="jewelry_type_color" model="jewelry_type">-->
+<!--            <field name="type_category">color</field>-->
+<!--        </record>-->
+<!--    </data>-->
+
+<!--    &lt;!&ndash; Tree View for Jewelry Types &ndash;&gt;-->
+<!--    <record id="view_jewelry_type_tree" model="ir.ui.view">-->
+<!--        <field name="name">jewelry_type_tree</field>-->
+<!--        <field name="model">jewelry_type</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <tree string="Jewelry Types" create="false">-->
+<!--                <field name="type_category"/>-->
+<!--            </tree>-->
+<!--        </field>-->
+<!--    </record>-->
+
+<!--    &lt;!&ndash; Form View for Jewelry Types &ndash;&gt;-->
+<!--    <record id="view_jewelry_type_form" model="ir.ui.view">-->
+<!--        <field name="name">jewelry_type_form</field>-->
+<!--        <field name="model">jewelry_type</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <form string="Jewelry Type">-->
+<!--                <sheet>-->
+<!--                    <group>-->
+<!--                        <field name="type_category" readonly="1"/>-->
+<!--                    </group>-->
+<!--                    <notebook>-->
+<!--                        <page string="Attribute Values">-->
+<!--                            <field name="attr_value_ids">-->
+<!--                                <tree editable="bottom">-->
+<!--                                    <field name="name"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                        </page>-->
+<!--                    </notebook>-->
+<!--                </sheet>-->
+<!--            </form>-->
+<!--        </field>-->
+<!--    </record>-->
 
     <!-- Action -->
     <record id="action_jewelry_type" model="ir.actions.act_window">
         <field name="name">Jewelry Types</field>
-        <field name="res_model">jewelry_type</field>
+        <field name="res_model">dropdown_option</field>
         <field name="view_mode">tree,form</field>
     </record>
 
@@ -82,4 +113,6 @@
     <menuitem id="menu_jewelry_type"
               name="Jewelry Types"
               parent="design_request_menu_list" action="action_jewelry_type"/>
+
+
 </odoo>

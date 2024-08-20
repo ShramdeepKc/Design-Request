@@ -37,8 +37,13 @@ class design_request(models.Model):
         default="draft",
         track_visibility="onchange",
     )
-    category_id = fields.Many2one("jewelry_type", string="Jewelry Type")
-    value_ids = fields.Many2many("jewelry_attr_value", string="Attribute Values")
+
+    metal_type_id = fields.Many2one('dropdown_option', string="Metal Type",
+                                    domain="[('option_type', '=', 'metal_type')]")
+    ring_type_id = fields.Many2one('dropdown_option', string="Ring Type",
+                                   domain="[('option_type', '=', 'ring_type')]")
+    shank_setting_style_id = fields.Many2one('dropdown_option', string="Shank Setting Style",
+                                             domain="[('option_type', '=', 'shank_setting_style')]")
 
     @api.model
     def create(self, vals):

@@ -63,22 +63,31 @@ class CustomerPortalHome(CustomerPortal):
     def create_design(self, **kw):
         user = request.env.user
         # Fetch all jewelry types
-        jewelry_types = request.env['jewelry_type'].search([])
+        # jewelry_types = request.env['jewelry_type'].search([])
         # Fetch attributes for each jewelry type
-        jewelry_type_values = {}
-        for jewelry_type in jewelry_types:
-            jewelry_type_values[jewelry_type.id] = request.env['jewelry_attr_value'].search([
-                ('jewelry_type_id', '=', jewelry_type.id)
-            ])
+        # jewelry_type_values = {}
+        # for jewelry_type in jewelry_types:
+        #     jewelry_type_values[jewelry_type.id] = request.env['jewelry_attr_value'].search([
+        #         ('jewelry_type_id', '=', jewelry_type.id)
+        #     ])
+
+        metal_types = request.env['dropdown_option'].sudo().search([('option_type', '=', 'metal_type')])
+        ring_types = request.env['dropdown_option'].sudo().search([('option_type', '=', 'ring_type')])
+        shank_styles = request.env['dropdown_option'].sudo().search(
+            [('option_type', '=', 'shank_setting_style')])
 
         values = {
             "page_name": "create_design",
             "customer_email": "",
             "customer_id": user.id,
             "errors": {"design_name": "", "customer_email": "", "design_image": ""},
-            "jewelry_types": jewelry_types,
-            "jewelry_type_values": jewelry_type_values,
+            # "jewelry_types": jewelry_types,
+            # "jewelry_type_values": jewelry_type_values,
+            'metal_types': metal_types,
+            'ring_types': ring_types,
+            'shank_styles': shank_styles,
         }
+
         return request.render("design_request.create_design_template", values)
 
     @http.route(
@@ -99,9 +108,10 @@ class CustomerPortalHome(CustomerPortal):
         customer_email = kw.get("customer_email")
         description = kw.get("description")
         design_image = request.httprequest.files.getlist("design_image")
+        metal_type_id = kw.get('metal_type_id')
+        ring_type_id = kw.get('ring_type_id')
+        shank_setting_style_id = kw.get('shank_setting_style_id')
 
-        # Extract category and values
-        category_id = int(kw.get("category_id")) if kw.get("category_id") else False
 
         # For multiple values, kw.get might return a single value or a list
         value_ids = kw.get("value_ids")
@@ -148,8 +158,9 @@ class CustomerPortalHome(CustomerPortal):
                         "client_email": request.env.user.email,
                         "description": description,
                         "design_image": [(6, 0, image_ids)],
-                        "category_id": category_id,
-                        "value_ids": [(6, 0, value_ids)] if value_ids else False,
+                        'metal_type_id': metal_type_id,
+                        'ring_type_id': ring_type_id,
+                        'shank_setting_style_id': shank_setting_style_id,
                     }
                 )
 
