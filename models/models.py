@@ -37,6 +37,8 @@ class design_request(models.Model):
         default="draft",
         track_visibility="onchange",
     )
+    category_id = fields.Many2one("jewelry_type", string="Jewelry Type")
+    value_ids = fields.Many2many("jewelry_attr_value", string="Attribute Values")
 
     @api.model
     def create(self, vals):

@@ -18,8 +18,13 @@ Long description of module's purpose
     'depends': ['base', 'web', 'portal', 'mail', 'sale'],
 
     # always loaded
-    'data': ['security/ir.model.access.csv', 'security/security.xml', 'views/views.xml', 'views/metal_attrs.xml',
-        'views/portalviews.xml', 'data/mail_template.xml',
+    'data': [
+             'security/security.xml',
+             'security/ir.model.access.csv',
+             'views/views.xml',
+             'views/metal_attrs.xml',
+             'views/portalviews.xml',
+             'data/mail_template.xml',
 
     ], 'assets': {'web.assets_frontend': ['design_request/static/src/css/custom_styles.css',
 

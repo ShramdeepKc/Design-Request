@@ -92,6 +92,7 @@ class CustomerPortalHome(CustomerPortal):
     def submit_design(self, **kw):
         values = {"page_name": "create_design"}
         errors = {"design_name": "", "customer_email": "", "design_image": ""}
+
         # Extract form data
         design_name = kw.get("design_name")
         customer_id = kw.get("customer_id")
@@ -99,6 +100,17 @@ class CustomerPortalHome(CustomerPortal):
         description = kw.get("description")
         design_image = request.httprequest.files.getlist("design_image")
 
+        # Extract category and values
+        category_id = int(kw.get("category_id")) if kw.get("category_id") else False
+
+        # For multiple values, kw.get might return a single value or a list
+        value_ids = kw.get("value_ids")
+        if isinstance(value_ids, str):  # Single value case
+            value_ids = [int(value_ids)]
+        elif isinstance(value_ids, list):  # Multiple values case
+            value_ids = [int(val_id) for val_id in value_ids]
+
+        # Validation
         if not design_name:
             errors["design_name"] = "Please enter design name"
         if customer_email and not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", customer_email):
@@ -106,11 +118,7 @@ class CustomerPortalHome(CustomerPortal):
         if not design_image:
             errors["design_image"] = "Please upload at least one design image"
 
-        if (
-            errors["design_name"] == ""
-            and errors["customer_email"] == ""
-            and errors["design_image"] == ""
-        ):
+        if not any(errors.values()):
             try:
                 allowed_extensions = ["jpg", "jpeg", "png", "webp"]
                 image_ids = []
@@ -131,6 +139,7 @@ class CustomerPortalHome(CustomerPortal):
                     )
                     image_ids.append(attachment.id)
 
+                # Create the design request record
                 request.env["design_request.design_request"].sudo().create(
                     {
                         "design_name": design_name,
@@ -139,38 +148,33 @@ class CustomerPortalHome(CustomerPortal):
                         "client_email": request.env.user.email,
                         "description": description,
                         "design_image": [(6, 0, image_ids)],
+                        "category_id": category_id,
+                        "value_ids": [(6, 0, value_ids)] if value_ids else False,
                     }
                 )
 
-                # TODO: Send emails asynchronously
-                design_team = (
-                    request.env["hr.employee"]
-                    .sudo()
-                    .search([("department_id.name", "=", "Designing Team")])
-                )
-
-                # Post a message to each member of the design team
+                # Notify design team
+                design_team = request.env["hr.employee"].sudo().search([("department_id.name", "=", "Designing Team")])
                 subject = "New Design Request Notification"
                 body = f"Dear {{}},<br/><br/>We have received a new design request: <b>{design_name}</b>.<br/><br/>Best regards,<br/>Nova Design Team"
                 for member in design_team:
                     email_values = {
                         "subject": subject,
                         "body_html": body.format(member.name),
-                        "email_to": member.work_email,  # Assuming each member has a work_email field
+                        "email_to": member.work_email,
                     }
                     mail = request.env["mail.mail"].sudo().create(email_values)
-                    # Send the email
                     mail.send()
 
                 return request.redirect("/my/designs")
+
             except UnidentifiedImageError as e:
                 errors["design_image"] = "Invalid image type"
             except Exception as e:
-                errors["design_image"] = f"Error : {e}"
+                errors["design_image"] = f"Error: {str(e)}"
 
-        values = {"page_name": "create_design", "errors": errors}
+        values["errors"] = errors
         return request.render("design_request.create_design_template", values)
-
     @http.route(
         '/my/designs/<model("design_request.design_request"):design>/',
         type="http",

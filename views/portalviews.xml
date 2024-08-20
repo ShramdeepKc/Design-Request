@@ -257,94 +257,75 @@
     </template>
 
     <template id="create_design_template" name="Create Design">
-        <t t-call="portal.portal_layout">
-            <div class="container">
-                <h3>Create New Design</h3>
-                <form action="/my/create-design/submit" method="post" enctype="multipart/form-data"
-                      class="wrapper col-12 d-flex flex-column gap-3 my-4">
-                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <input type="hidden" name="customer_id" t-att-value="customer_id"/>
+    <t t-call="portal.portal_layout">
+        <div class="container">
+            <h3>Create New Design</h3>
+            <form action="/my/create-design/submit" method="post" enctype="multipart/form-data"
+                  class="wrapper col-12 d-flex flex-column gap-3 my-4">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="customer_id" t-att-value="customer_id"/>
 
-                    <!-- Design Name Field -->
-                    <div class="form-group">
-                        <label for="design_name">
-                            <b>Design Name</b>
-                        </label>
-                        <input type="text" id="design_name" name="design_name" class="form-control"
-                               placeholder="Design Name" required="required"/>
-                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_name']"
-                             t-esc="errors['design_name']"/>
+                <!-- Design Name Field -->
+                <div class="form-group">
+                    <label for="design_name"><b>Design Name</b></label>
+                    <input type="text" id="design_name" name="design_name" class="form-control"
+                           placeholder="Design Name" required="required"/>
+                    <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_name']"
+                         t-esc="errors['design_name']"/>
+                </div>
+
+                <!-- Customer Email Field -->
+                <div class="form-group">
+                    <label for="customer_email"><b>Customer Email (optional)</b></label>
+                    <input type="email" class="form-control" id="customer_email" name="customer_email"
+                           placeholder="Customer Email" t-att-value="customer_email"/>
+                    <div class="alert alert-danger mt-2" role="alert" t-if="errors['customer_email']"
+                         t-esc="errors['customer_email']"/>
+                </div>
+
+                <!-- Description Field -->
+                <div class="form-group">
+                    <label for="description"><b>Description (optional)</b></label>
+                    <textarea class="form-control" id="description" name="description"
+                              placeholder="Description" t-att-value="description"/>
+                </div>
+
+                <!-- Jewelry Type and Values Dropdown -->
+                <div class="form-group">
+                    <label><b>Select Jewelry Type and Attributes</b></label>
+                    <div class="row">
+                        <t t-foreach="jewelry_types" t-as="type">
+                            <div class="col-md-6">
+                                <label><t t-esc="type.type_category"/></label>
+                                <select class="form-control" t-att-name="'jewelry_type_' + str(type.id)">
+                                    <option value="">Select <t t-esc="type.type_category"/></option>
+                                    <t t-foreach="jewelry_type_values[type.id]" t-as="value">
+                                        <option t-att-value="value.id">
+                                            <t t-esc="value.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </t>
                     </div>
+                </div>
 
-                    <!-- Customer Email Field -->
-                    <div class="form-group">
-                        <label for="customer_email">
-                            <b>Customer Email (optional)</b>
-                        </label>
-                        <input type="email" class="form-control" id="customer_email" name="customer_email"
-                               placeholder="Customer Email" t-att-value="customer_email"/>
-                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['customer_email']"
-                             t-esc="errors['customer_email']"/>
-                    </div>
+                <!-- Design Image Upload -->
+                <div class="form-group">
+                    <label for="design_image"><b>Upload Drawing</b></label>
+                    <input type="file" class="file" id="design_image" name="design_image"
+                           accept=".jpg,.jpeg,.png,.webp" required="required" multiple="multiple"/>
+                    <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_image']"
+                         t-esc="errors['design_image']"/>
+                </div>
 
-                    <!-- Description Field -->
-                    <div class="form-group">
-                        <label for="description">
-                            <b>Description (optional)</b>
-                        </label>
-                        <textarea class="form-control" id="description" name="description"
-                                  placeholder="Description" t-att-value="description"/>
-                    </div>
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary mt-3 me-auto px-3">Submit</button>
+            </form>
+        </div>
+    </t>
+</template>
 
-                    <!-- Jewelry Type List -->
-                    <div class="form-group">
-                        <label for="jewelry_type">
-                            <b>Select Jewelry Type</b>
-                        </label>
-                        <div class="row">
-                            <t t-foreach="jewelry_types" t-as="type">
-                                <div class="col-md-4">
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <h5 class="card-title">
-                                                <t t-esc="type.type_category"/>
-                                            </h5>
-                                            <input type="radio" t-att-id="'jewelry_type_' + str(type.id)"
-                                                   name="jewelry_type" t-att-value="type.id"/>
-                                            <label t-att-for="'jewelry_type_' + str(type.id)">
-                                                <t t-esc="type.type_category"/>
-                                            </label>
-                                            <ul>
-                                                <t t-foreach="jewelry_type_values[type.id]" t-as="value">
-                                                    <li>
-                                                        <t t-esc="value.name"/>
-                                                    </li>
-                                                </t>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </t>
-                        </div>
-                    </div>
-
-                    <!-- Design Image Upload -->
-                    <div class="form-group">
-                        <label for="design_image">
-                            <b>Upload Drawing</b>
-                        </label>
-                        <input type="file" class="file" id="design_image" name="design_image"
-                               accept=".jpg,.jpeg,.png,.webp" required="required" multiple="multiple"/>
-                        <div class="alert alert-danger mt-2" role="alert" t-if="errors['design_image']"
-                             t-esc="errors['design_image']"/>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn btn-primary mt-3 me-auto px-3">Submit</button>
-                </form>
-            </div>
-        </t>
-    </template>
 
     <template id="view_quotations_template" name="View Quotations">
         <t t-call="portal.portal_layout">
