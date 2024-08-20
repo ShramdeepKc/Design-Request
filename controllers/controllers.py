@@ -62,11 +62,22 @@ class CustomerPortalHome(CustomerPortal):
     @http.route(["/my/create-design"], type="http", auth="user", website=True)
     def create_design(self, **kw):
         user = request.env.user
+        # Fetch all jewelry types
+        jewelry_types = request.env['jewelry_type'].search([])
+        # Fetch attributes for each jewelry type
+        jewelry_type_values = {}
+        for jewelry_type in jewelry_types:
+            jewelry_type_values[jewelry_type.id] = request.env['jewelry_attr_value'].search([
+                ('jewelry_type_id', '=', jewelry_type.id)
+            ])
+
         values = {
             "page_name": "create_design",
             "customer_email": "",
             "customer_id": user.id,
             "errors": {"design_name": "", "customer_email": "", "design_image": ""},
+            "jewelry_types": jewelry_types,
+            "jewelry_type_values": jewelry_type_values,
         }
         return request.render("design_request.create_design_template", values)
 

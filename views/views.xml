@@ -24,7 +24,7 @@
                         <button name="action_ready_for_quotation" type="object" string="Ready For Quotation"
                                 class="btn btn-secondary"
                                 domain="[('state', '=', 'in_progress')]"
-                                groups="design_request.group_design_department" 
+                                groups="design_request.group_design_department"
                                 invisible="state != 'in_progress'"
                                 />
 
@@ -94,6 +94,8 @@
         <!-- Actions -->
         <menuitem name="List" id="design_request_menu_list_action" parent="design_request_menu_list"
                   action="design_request_action_window"/>
+
+
 
     </data>
 </odoo>

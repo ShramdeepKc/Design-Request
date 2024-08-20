@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_design_request_design_request,design_request.design_request,model_design_request_design_request,base.group_user,1,1,1,1
 access_design_request_design_request_button,design_request.design_request,model_design_request_design_request,group_design_department,0,0,1,1
+access_jewelry_type,jewelry_type,model_jewelry_type,base.group_user,1,1,1,1
+access_jewelry_attr_value,jewelry_attr_value,model_jewelry_attr_value,base.group_user,1,1,1,1
