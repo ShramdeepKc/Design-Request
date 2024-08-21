@@ -10,7 +10,6 @@ class AttrDropdownOption(models.Model):
         ('metal_type', 'Metal Type'),
         ('ring_type', 'Ring Type'),
         ('shank_setting_style', 'Shank Setting Style'),
-        # Add other types as needed
     ], string="Option Type", required=True)
 
 # class JewelryType(models.Model):

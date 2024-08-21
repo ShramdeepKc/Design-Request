@@ -6,8 +6,8 @@
         <form string="Design Dropdown Option">
             <sheet>
                 <group>
-                    <field name="name"/>
                     <field name="option_type"/>
+                    <field name="name"/>
                 </group>
             </sheet>
         </form>
@@ -107,6 +107,7 @@
         <field name="name">Jewelry Types</field>
         <field name="res_model">dropdown_option</field>
         <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_design_dropdown_option_tree"/>
     </record>
 
     <!-- Menu Item -->
